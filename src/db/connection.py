@@ -1,4 +1,4 @@
-from src.config import settings 
+from advanced_search_system.config import settings 
 import psycopg 
 from psycopg import Connection 
 
