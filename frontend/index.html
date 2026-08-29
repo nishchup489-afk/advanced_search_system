@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -10,10 +11,12 @@
 
     <meta
         name="description"
-        content="A PostgreSQL search engineering lab built with FastAPI."
+        content="SearchLab — a PostgreSQL search engineering lab built with FastAPI."
     >
 
-    <title>SearchLab — PostgreSQL Search Engineering</title>
+    <title>
+        SearchLab — PostgreSQL Search Engineering
+    </title>
 
     <link
         rel="stylesheet"
@@ -21,18 +24,39 @@
     >
 </head>
 
+
 <body>
 
+    <!-- =========================================================
+         NAVBAR
+         ========================================================= -->
+
     <header class="navbar">
+
         <div class="container navbar-content">
 
-            <a href="/" class="logo">
+            <a
+                href="./index.html"
+                class="logo"
+            >
                 Search<span>Lab</span>
             </a>
 
+
             <nav>
-                <a href="#versions">Versions</a>
-                <a href="#about">About</a>
+
+                <a href="#versions">
+                    Versions
+                </a>
+
+                <a href="#benchmark">
+                    Benchmark
+                </a>
+
+                <a href="#about">
+                    About
+                </a>
+
                 <a
                     href="https://github.com/"
                     target="_blank"
@@ -40,41 +64,57 @@
                 >
                     GitHub
                 </a>
+
             </nav>
 
         </div>
+
     </header>
+
 
 
     <main>
 
-        <!-- HERO -->
+        <!-- =====================================================
+             HERO
+             ===================================================== -->
 
         <section class="hero">
+
             <div class="container hero-content">
 
                 <div class="eyebrow">
                     PostgreSQL Search Engineering Lab
                 </div>
 
+
                 <h1>
                     Build search.
                     <br>
-                    <span>Understand why it works.</span>
+
+                    <span>
+                        Understand why it works.
+                    </span>
                 </h1>
 
+
                 <p class="hero-description">
-                    An evolving product search engine built from raw
-                    PostgreSQL primitives — starting with naive
-                    <code>ILIKE</code> and progressing through full-text
-                    search, GIN indexes, ranking, fuzzy matching,
-                    pagination, and caching.
+                    An evolving product search engine built from
+                    PostgreSQL primitives — beginning with naive
+                    <code>ILIKE</code> substring matching and
+                    progressively adding full-text retrieval,
+                    indexes, relevance ranking, fuzzy matching
+                    and caching.
                 </p>
 
+
+
+                <!-- SEARCH PREVIEW -->
 
                 <div class="search-preview">
 
                     <div class="search-bar">
+
                         <svg
                             viewBox="0 0 24 24"
                             aria-hidden="true"
@@ -84,19 +124,46 @@
                             />
                         </svg>
 
-                        <span>wireless mechanical keyboard</span>
 
-                        <kbd>⌘ K</kbd>
+                        <span>
+                            wireless mechanical keyboard
+                        </span>
+
+
+                        <kbd>
+                            ⌘ K
+                        </kbd>
+
                     </div>
 
+
+
                     <div class="preview-meta">
-                        <span>100,000 products</span>
-                        <span>PostgreSQL</span>
-                        <span>FastAPI</span>
-                        <span>Raw SQL</span>
+
+                        <span>
+                            100,000 products
+                        </span>
+
+                        <span>
+                            PostgreSQL
+                        </span>
+
+                        <span>
+                            FastAPI
+                        </span>
+
+                        <span>
+                            Psycopg
+                        </span>
+
+                        <span>
+                            Raw SQL
+                        </span>
+
                     </div>
 
                 </div>
+
 
 
                 <a
@@ -104,47 +171,62 @@
                     class="primary-button"
                 >
                     Explore the evolution
-                    <span>↓</span>
+
+                    <span>
+                        ↓
+                    </span>
                 </a>
 
             </div>
+
         </section>
 
 
-        <!-- VERSIONS -->
+
+        <!-- =====================================================
+             VERSION ROADMAP
+             ===================================================== -->
 
         <section
             class="versions-section"
             id="versions"
         >
+
             <div class="container">
 
                 <div class="section-heading">
 
                     <div>
+
                         <span class="section-label">
                             SEARCH EVOLUTION
                         </span>
 
+
                         <h2>
-                            Eight versions.
+                            Six versions.
                             <br>
                             One database.
                         </h2>
+
                     </div>
 
+
                     <p>
-                        Each version solves a limitation discovered
-                        in the previous implementation.
+                        Each version keeps the previous problem visible,
+                        then introduces one meaningful architectural
+                        improvement.
                     </p>
 
                 </div>
 
 
+
                 <div class="version-grid">
 
-
-                    <!-- V1 -->
+                    <!-- =================================================
+                         V1
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -163,29 +245,54 @@
 
                         </div>
 
-                        <h3>ILIKE Search</h3>
+
+                        <h3>
+                            ILIKE Search
+                        </h3>
+
 
                         <p>
                             The intentionally naive baseline.
-                            Substring matching with
+                            Case-insensitive substring matching across
+                            product fields using
                             <code>ILIKE '%query%'</code>.
                         </p>
 
+
                         <div class="tags">
-                            <span>ILIKE</span>
-                            <span>Seq Scan</span>
-                            <span>Baseline</span>
+
+                            <span>
+                                ILIKE
+                            </span>
+
+                            <span>
+                                Sequential Scan
+                            </span>
+
+                            <span>
+                                Baseline
+                            </span>
+
                         </div>
 
-                        <a href="./search.html?v=1">
+
+                        <a href="./v1/v1.html">
+
                             Open V1
-                            <span>→</span>
+
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
 
 
-                    <!-- V2 -->
+
+                    <!-- =================================================
+                         V2
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -204,28 +311,54 @@
 
                         </div>
 
-                        <h3>Full-Text Search</h3>
+
+                        <h3>
+                            Full-Text Search
+                        </h3>
+
 
                         <p>
-                            Tokenization, stemming, lexemes and
-                            PostgreSQL's native full-text search.
+                            Move from raw substring matching to
+                            PostgreSQL linguistic retrieval using
+                            tokens, lexemes, stemming and
+                            <code>tsquery</code>.
                         </p>
 
+
                         <div class="tags">
-                            <span>tsvector</span>
-                            <span>tsquery</span>
-                            <span>@@</span>
+
+                            <span>
+                                tsvector
+                            </span>
+
+                            <span>
+                                tsquery
+                            </span>
+
+                            <span>
+                                @@
+                            </span>
+
                         </div>
 
-                        <a href="./search.html?v=2">
+
+                        <a href="./v2/v2.html">
+
                             Open V2
-                            <span>→</span>
+
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
 
 
-                    <!-- V3 -->
+
+                    <!-- =================================================
+                         V3
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -244,29 +377,53 @@
 
                         </div>
 
-                        <h3>FTS + GIN</h3>
+
+                        <h3>
+                            FTS + GIN
+                        </h3>
+
 
                         <p>
-                            The same search problem, now backed by
-                            an indexed search vector for fast
-                            candidate retrieval.
+                            Keep full-text retrieval while adding a
+                            GIN-backed search vector so PostgreSQL can
+                            locate candidates through an index.
                         </p>
 
+
                         <div class="tags">
-                            <span>GIN</span>
-                            <span>EXPLAIN</span>
-                            <span>Index Scan</span>
+
+                            <span>
+                                GIN
+                            </span>
+
+                            <span>
+                                Search Vector
+                            </span>
+
+                            <span>
+                                EXPLAIN
+                            </span>
+
                         </div>
 
-                        <a href="./search.html?v=3">
+
+                        <a href="./v3/v3.html">
+
                             Open V3
-                            <span>→</span>
+
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
 
 
-                    <!-- V4 -->
+
+                    <!-- =================================================
+                         V4
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -285,28 +442,53 @@
 
                         </div>
 
-                        <h3>Ranking + Filters</h3>
+
+                        <h3>
+                            Weighted Ranking
+                        </h3>
+
 
                         <p>
-                            Weighted fields and relevance scoring,
-                            combined with structured product filters.
+                            Stop treating every match equally.
+                            Weight important fields and order results
+                            using PostgreSQL relevance scores.
                         </p>
 
+
                         <div class="tags">
-                            <span>ts_rank</span>
-                            <span>setweight</span>
-                            <span>Filters</span>
+
+                            <span>
+                                ts_rank
+                            </span>
+
+                            <span>
+                                setweight
+                            </span>
+
+                            <span>
+                                Relevance
+                            </span>
+
                         </div>
 
-                        <a href="./search.html?v=4">
+
+                        <a href="./v4/v4.html">
+
                             Open V4
-                            <span>→</span>
+
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
 
 
-                    <!-- V5 -->
+
+                    <!-- =================================================
+                         V5
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -325,28 +507,53 @@
 
                         </div>
 
-                        <h3>Fuzzy Search</h3>
+
+                        <h3>
+                            Fuzzy Fallback
+                        </h3>
+
 
                         <p>
-                            Typo-tolerant fallback and suggestions
-                            using PostgreSQL trigram similarity.
+                            Recover from misspellings and failed
+                            searches using PostgreSQL trigram
+                            similarity and typo-tolerant fallback.
                         </p>
 
+
                         <div class="tags">
-                            <span>pg_trgm</span>
-                            <span>similarity()</span>
-                            <span>Autocomplete</span>
+
+                            <span>
+                                pg_trgm
+                            </span>
+
+                            <span>
+                                similarity()
+                            </span>
+
+                            <span>
+                                Suggestions
+                            </span>
+
                         </div>
 
-                        <a href="./search.html?v=5">
+
+                        <a href="./v5/v5.html">
+
                             Open V5
-                            <span>→</span>
+
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
 
 
-                    <!-- V6 -->
+
+                    <!-- =================================================
+                         V6
+                         ================================================= -->
 
                     <article
                         class="version-card"
@@ -360,110 +567,49 @@
                             </span>
 
                             <span class="status">
-                                SCALE
-                            </span>
-
-                        </div>
-
-                        <h3>Facets + Pagination</h3>
-
-                        <p>
-                            Amazon-style facets and scalable result
-                            navigation using offset and cursor
-                            pagination.
-                        </p>
-
-                        <div class="tags">
-                            <span>Facets</span>
-                            <span>Cursor</span>
-                            <span>GROUP BY</span>
-                        </div>
-
-                        <a href="./search.html?v=6">
-                            Open V6
-                            <span>→</span>
-                        </a>
-
-                    </article>
-
-
-                    <!-- V7 -->
-
-                    <article
-                        class="version-card"
-                        data-version="v7"
-                    >
-
-                        <div class="version-top">
-
-                            <span class="version-number">
-                                V7
-                            </span>
-
-                            <span class="status">
                                 CACHE
                             </span>
 
                         </div>
 
-                        <h3>Redis Caching</h3>
+
+                        <h3>
+                            Redis Caching
+                        </h3>
+
 
                         <p>
-                            Cache normalized searches while exploring
-                            TTLs, cache keys, hit ratios and
-                            invalidation.
+                            Cache repeated normalized searches and
+                            compare database execution with cache hits,
+                            TTLs and cache-key design.
                         </p>
 
+
                         <div class="tags">
-                            <span>Redis</span>
-                            <span>TTL</span>
-                            <span>Cache Hit</span>
-                        </div>
 
-                        <a href="./search.html?v=7">
-                            Open V7
-                            <span>→</span>
-                        </a>
-
-                    </article>
-
-
-                    <!-- V8 -->
-
-                    <article
-                        class="version-card"
-                        data-version="v8"
-                    >
-
-                        <div class="version-top">
-
-                            <span class="version-number">
-                                V8
+                            <span>
+                                Redis
                             </span>
 
-                            <span class="status">
-                                FEEDBACK
+                            <span>
+                                TTL
+                            </span>
+
+                            <span>
+                                Cache Hit
                             </span>
 
                         </div>
 
-                        <h3>Search Intelligence</h3>
 
-                        <p>
-                            Track search quality, zero-result queries
-                            and user behavior to discover where search
-                            still fails.
-                        </p>
+                        <a href="./v6/v6.html">
 
-                        <div class="tags">
-                            <span>Analytics</span>
-                            <span>Clicks</span>
-                            <span>Recovery</span>
-                        </div>
+                            Open V6
 
-                        <a href="./search.html?v=8">
-                            Open V8
-                            <span>→</span>
+                            <span>
+                                →
+                            </span>
+
                         </a>
 
                     </article>
@@ -471,26 +617,45 @@
                 </div>
 
             </div>
+
         </section>
 
 
-        <!-- BENCHMARK -->
 
-        <section class="benchmark-section">
+        <!-- =====================================================
+             BENCHMARK
+             ===================================================== -->
+
+        <section
+            class="benchmark-section"
+            id="benchmark"
+        >
 
             <div class="container benchmark">
 
                 <div>
+
                     <span class="section-label">
                         BENCHMARK
                     </span>
+
 
                     <h2>
                         Same query.
                         <br>
                         Different architecture.
                     </h2>
+
+
+                    <p class="benchmark-description">
+                        Every version is measured independently so
+                        application latency and PostgreSQL execution
+                        behavior can be compared without hiding what
+                        changed underneath.
+                    </p>
+
                 </div>
+
 
 
                 <div class="terminal">
@@ -501,20 +666,26 @@
                         <span></span>
                         <span></span>
 
-                        <p>benchmark.log</p>
+                        <p>
+                            benchmark.log
+                        </p>
 
                     </div>
 
-                    <pre><code>dataset       100,000 products
 
-query         "wireless keyboard"
+                    <pre><code>dataset             100,000 products
 
-V1 ILIKE              -- ms
-V2 FTS                -- ms
-V3 FTS + GIN          -- ms
-V4 Ranked             -- ms
-V5 Fuzzy fallback     -- ms
-V7 Cached             -- ms</code></pre>
+query               "wireless keyboard"
+
+
+VERSION             APP TIME      POSTGRESQL      PLAN
+
+V1  ILIKE              -- ms          -- ms       Sequential Scan
+V2  Full-text           -- ms          -- ms       --
+V3  FTS + GIN           -- ms          -- ms       --
+V4  Weighted            -- ms          -- ms       --
+V5  Fuzzy               -- ms          -- ms       --
+V6  Cached              -- ms          -- ms       --</code></pre>
 
                 </div>
 
@@ -523,43 +694,193 @@ V7 Cached             -- ms</code></pre>
         </section>
 
 
-        <!-- ABOUT -->
+
+        <!-- =====================================================
+             WHAT WE MEASURE
+             ===================================================== -->
+
+        <section class="measurement-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            MEASUREMENT
+                        </span>
+
+
+                        <h2>
+                            Don't just call it fast.
+                            <br>
+                            Measure what happened.
+                        </h2>
+
+                    </div>
+
+
+                    <p>
+                        SearchLab keeps application measurements
+                        separate from PostgreSQL execution diagnostics.
+                    </p>
+
+                </div>
+
+
+
+                <div class="measurement-grid">
+
+                    <article>
+
+                        <span>
+                            01
+                        </span>
+
+                        <h3>
+                            Application latency
+                        </h3>
+
+                        <p>
+                            Python's
+                            <code>perf_counter()</code>
+                            measures application-observed elapsed
+                            time around the database operation.
+                        </p>
+
+                    </article>
+
+
+
+                    <article>
+
+                        <span>
+                            02
+                        </span>
+
+                        <h3>
+                            Python memory
+                        </h3>
+
+                        <p>
+                            <code>tracemalloc</code>
+                            records current and peak tracked Python
+                            allocations during the search.
+                        </p>
+
+                    </article>
+
+
+
+                    <article>
+
+                        <span>
+                            03
+                        </span>
+
+                        <h3>
+                            PostgreSQL execution
+                        </h3>
+
+                        <p>
+                            <code>EXPLAIN ANALYZE</code>
+                            exposes execution time, planning time,
+                            rows processed and the chosen plan.
+                        </p>
+
+                    </article>
+
+
+
+                    <article>
+
+                        <span>
+                            04
+                        </span>
+
+                        <h3>
+                            Buffer behavior
+                        </h3>
+
+                        <p>
+                            <code>BUFFERS</code>
+                            shows whether database pages were already
+                            available in PostgreSQL's shared cache or
+                            needed to be read.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             ABOUT
+             ===================================================== -->
 
         <section
             class="about-section"
             id="about"
         >
+
             <div class="container about">
 
                 <span class="section-label">
                     THE POINT
                 </span>
 
+
                 <blockquote>
                     Don't memorize that GIN and Redis are fast.
-                    Build the bad version first and measure
-                    <strong>why</strong> the architecture had to evolve.
+                    Build the bad version first, inspect the query
+                    planner, measure the failure mode, and understand
+                    <strong>why</strong>
+                    the architecture had to evolve.
                 </blockquote>
 
+
+                <p>
+                    SearchLab is not meant to hide PostgreSQL behind
+                    abstractions. Each version keeps the SQL,
+                    execution plan, application measurements and
+                    limitations visible.
+                </p>
+
             </div>
+
         </section>
 
     </main>
 
 
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
     <footer>
+
         <div class="container footer-content">
 
             <p>
                 SearchLab
             </p>
 
+
             <p>
-                FastAPI × PostgreSQL
+                FastAPI × PostgreSQL × Psycopg
             </p>
 
         </div>
+
     </footer>
+
 
 
     <script
@@ -568,4 +889,5 @@ V7 Cached             -- ms</code></pre>
     ></script>
 
 </body>
+
 </html>

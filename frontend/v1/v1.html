@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="SearchLab V1 — PostgreSQL ILIKE substring search with application and database diagnostics."
+    >
+
+    <title>
+        SearchLab — V1 ILIKE Search
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./v1.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <header class="topbar">
+
+        <div class="container topbar-content">
+
+            <a
+                href="../index.html"
+                class="brand"
+            >
+                Search<span>Lab</span>
+            </a>
+
+
+            <div class="topbar-right">
+
+                <span class="version-badge">
+                    V1
+                </span>
+
+                <span class="version-tech">
+                    PostgreSQL ILIKE
+                </span>
+
+                <a
+                    href="../index.html#versions"
+                    class="back-link"
+                >
+                    All versions
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <main>
+
+        <!-- =====================================================
+             HERO
+             ===================================================== -->
+
+        <section class="hero">
+
+            <div class="container">
+
+                <div class="hero-eyebrow">
+                    VERSION 01 / BASELINE
+                </div>
+
+
+                <h1>
+                    ILIKE substring search.
+                </h1>
+
+
+                <p class="hero-description">
+                    The deliberately naive baseline.
+                    Search raw text, measure what happens,
+                    inspect PostgreSQL, then improve it.
+                </p>
+
+
+                <div class="hero-tags">
+
+                    <span>
+                        Case insensitive
+                    </span>
+
+                    <span>
+                        Substring matching
+                    </span>
+
+                    <span>
+                        No ranking
+                    </span>
+
+                    <span>
+                        No stemming
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             SEARCH
+             ===================================================== -->
+
+        <section class="search-section">
+
+            <div class="container">
+
+                <form
+                    id="searchForm"
+                    class="search-form"
+                >
+
+                    <div class="search-input-wrapper">
+
+                        <svg
+                            class="search-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="m21 21-4.35-4.35m2.35-5.65A8 8 0 1 1 3 11a8 8 0 0 1 16 0Z"
+                            />
+                        </svg>
+
+
+                        <input
+                            id="searchInput"
+                            type="search"
+                            name="q"
+                            placeholder="Search products..."
+                            autocomplete="off"
+                            maxlength="200"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        id="searchButton"
+                        type="submit"
+                    >
+                        Search
+                    </button>
+
+                </form>
+
+
+
+                <div class="example-queries">
+
+                    <span class="example-label">
+                        Try
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="example-query"
+                        data-query="keyboard"
+                    >
+                        keyboard
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="example-query"
+                        data-query="sony"
+                    >
+                        sony
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="example-query"
+                        data-query="gaming"
+                    >
+                        gaming
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="example-query"
+                        data-query="wireless keyboard"
+                    >
+                        wireless keyboard
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="example-query"
+                        data-query="qzxneverexists92847"
+                    >
+                        zero-result scan
+                    </button>
+
+                </div>
+
+
+                <div class="search-status">
+
+                    <span>
+                        Query
+                    </span>
+
+                    <strong id="activeQuery">
+                        none
+                    </strong>
+
+                    <span class="status-divider">
+                        /
+                    </span>
+
+                    <span>
+                        Returned
+                    </span>
+
+                    <strong id="resultCount">
+                        0
+                    </strong>
+
+                    <span class="status-divider">
+                        /
+                    </span>
+
+                    <span>
+                        Strategy
+                    </span>
+
+                    <strong>
+                        ILIKE substring scan
+                    </strong>
+
+                </div>
+
+
+                <div
+                    id="message"
+                    class="message"
+                    hidden
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             REPORT
+             ===================================================== -->
+
+        <section class="report-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            REPORT
+                        </span>
+
+                        <h2>
+                            What happened during this search?
+                        </h2>
+
+                    </div>
+
+
+                    <p>
+                        Application measurements and PostgreSQL
+                        execution diagnostics are intentionally
+                        shown separately.
+                    </p>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     APPLICATION METRICS
+                     ============================================= -->
+
+                <div class="report-block">
+
+                    <div class="report-block-heading">
+
+                        <div>
+
+                            <span class="report-number">
+                                01
+                            </span>
+
+                            <div>
+
+                                <h3>
+                                    Application measurements
+                                </h3>
+
+                                <p>
+                                    Measured from Python while the
+                                    application performs the search.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="measurement-source">
+                            Python
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="metric-grid application-metrics">
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Application time
+                            </span>
+
+                            <strong
+                                id="applicationTime"
+                                class="metric-value"
+                            >
+                                -- ms
+                            </strong>
+
+                            <p>
+                                Wall-clock time measured with
+                                <code>perf_counter()</code>.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Current Python memory
+                            </span>
+
+                            <strong
+                                id="currentMemory"
+                                class="metric-value"
+                            >
+                                -- MB
+                            </strong>
+
+                            <p>
+                                Tracked Python memory still allocated
+                                when measurement finished.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Peak Python memory
+                            </span>
+
+                            <strong
+                                id="peakMemory"
+                                class="metric-value"
+                            >
+                                -- MB
+                            </strong>
+
+                            <p>
+                                Highest tracked Python allocation
+                                observed by <code>tracemalloc</code>.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="report-note">
+
+                        <span>
+                            Important
+                        </span>
+
+                        <p>
+                            These memory numbers describe Python
+                            allocations. They do not represent
+                            PostgreSQL server RAM usage.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     POSTGRESQL REPORT
+                     ============================================= -->
+
+                <div class="report-block postgres-report">
+
+                    <div class="report-block-heading">
+
+                        <div>
+
+                            <span class="report-number">
+                                02
+                            </span>
+
+                            <div>
+
+                                <h3>
+                                    PostgreSQL execution
+                                </h3>
+
+                                <p>
+                                    Parsed from
+                                    <code>
+                                        EXPLAIN
+                                        (ANALYZE, BUFFERS, FORMAT JSON)
+                                    </code>.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="measurement-source">
+                            PostgreSQL
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         MAIN PLAN EXPLANATION
+                         ========================================= -->
+
+                    <div class="plan-summary">
+
+                        <div class="plan-icon">
+                            DB
+                        </div>
+
+
+                        <div>
+
+                            <span class="plan-caption">
+                                HOW POSTGRESQL FOUND THE ROWS
+                            </span>
+
+                            <h4 id="planHumanTitle">
+                                Run a search to inspect the execution plan.
+                            </h4>
+
+                            <p id="planHumanDescription">
+                                PostgreSQL will explain whether it scanned
+                                table rows sequentially or used another
+                                access strategy.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metric-grid postgres-metrics">
+
+                        <article class="metric-card emphasis">
+
+                            <span class="metric-label">
+                                Search strategy
+                            </span>
+
+                            <strong
+                                id="planType"
+                                class="metric-value"
+                            >
+                                --
+                            </strong>
+
+                            <p id="planTypeExplanation">
+                                Waiting for PostgreSQL.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Database execution
+                            </span>
+
+                            <strong
+                                id="postgresExecutionTime"
+                                class="metric-value"
+                            >
+                                -- ms
+                            </strong>
+
+                            <p>
+                                Total execution time reported by
+                                PostgreSQL itself.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Planning time
+                            </span>
+
+                            <strong
+                                id="planningTime"
+                                class="metric-value"
+                            >
+                                -- ms
+                            </strong>
+
+                            <p>
+                                Time PostgreSQL spent deciding
+                                how to execute the query.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Time until first row
+                            </span>
+
+                            <strong
+                                id="firstRowTime"
+                                class="metric-value"
+                            >
+                                -- ms
+                            </strong>
+
+                            <p>
+                                How long the scan node took before
+                                producing its first result.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Time until scan finished
+                            </span>
+
+                            <strong
+                                id="lastRowTime"
+                                class="metric-value"
+                            >
+                                -- ms
+                            </strong>
+
+                            <p>
+                                Time reported when that scan operation
+                                completed.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Rows returned by scan
+                            </span>
+
+                            <strong
+                                id="actualRows"
+                                class="metric-value"
+                            >
+                                --
+                            </strong>
+
+                            <p>
+                                Rows emitted by the inspected
+                                database scan node.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Rows checked but rejected
+                            </span>
+
+                            <strong
+                                id="rowsRemoved"
+                                class="metric-value"
+                            >
+                                --
+                            </strong>
+
+                            <p id="rowsRemovedExplanation">
+                                Rows PostgreSQL inspected but discarded
+                                because they did not match the filter.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Cached database pages
+                            </span>
+
+                            <strong
+                                id="sharedHits"
+                                class="metric-value"
+                            >
+                                --
+                            </strong>
+
+                            <p>
+                                Shared buffer hits: pages PostgreSQL
+                                already had available in memory.
+                            </p>
+
+                        </article>
+
+
+
+                        <article class="metric-card">
+
+                            <span class="metric-label">
+                                Database pages read
+                            </span>
+
+                            <strong
+                                id="sharedReads"
+                                class="metric-value"
+                            >
+                                --
+                            </strong>
+
+                            <p>
+                                Shared buffer reads: pages that were not
+                                already present in PostgreSQL's shared
+                                buffer cache.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         SIMPLE ENGLISH SUMMARY
+                         ========================================= -->
+
+                    <div class="execution-story">
+
+                        <div class="execution-story-header">
+
+                            <span>
+                                PLAIN ENGLISH
+                            </span>
+
+                            <h4>
+                                What does this report mean?
+                            </h4>
+
+                        </div>
+
+
+                        <p id="executionStory">
+                            Run a search and SearchLab will translate
+                            PostgreSQL's execution plan into a short
+                            explanation here.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         RAW INSPECTORS
+                         ========================================= -->
+
+                    <div class="raw-inspectors">
+
+                        <details class="raw-panel">
+
+                            <summary>
+
+                                <div>
+
+                                    <span>
+                                        RAW QUERY
+                                    </span>
+
+                                    <strong>
+                                        See exactly what PostgreSQL executed
+                                    </strong>
+
+                                </div>
+
+                                <span class="details-action">
+                                    Open
+                                </span>
+
+                            </summary>
+
+
+                            <div class="raw-panel-content">
+
+                                <pre><code id="rawQuery">EXPLAIN (
+    ANALYZE,
+    BUFFERS,
+    FORMAT JSON
+)
+SELECT
+    id,
+    name,
+    description,
+    brand,
+    category,
+    price,
+    rating,
+    stock
+FROM products
+WHERE
+    name ILIKE %s
+    OR description ILIKE %s
+    OR brand ILIKE %s
+    OR category ILIKE %s
+LIMIT 10;</code></pre>
+
+                            </div>
+
+                        </details>
+
+
+
+                        <details class="raw-panel">
+
+                            <summary>
+
+                                <div>
+
+                                    <span>
+                                        RAW RESPONSE
+                                    </span>
+
+                                    <strong>
+                                        See PostgreSQL's original JSON plan
+                                    </strong>
+
+                                </div>
+
+                                <span class="details-action">
+                                    Open
+                                </span>
+
+                            </summary>
+
+
+                            <div class="raw-panel-content">
+
+                                <pre><code id="rawQueryPlan">Run a search to inspect the raw EXPLAIN response.</code></pre>
+
+                            </div>
+
+                        </details>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     VERSION BENCHMARK
+                     ============================================= -->
+
+                <div class="report-block benchmark-report">
+
+                    <div class="report-block-heading">
+
+                        <div>
+
+                            <span class="report-number">
+                                03
+                            </span>
+
+                            <div>
+
+                                <h3>
+                                    Version benchmark
+                                </h3>
+
+                                <p>
+                                    The same experiment will be repeated
+                                    as the search architecture evolves.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="measurement-source">
+                            SearchLab
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="benchmark-context">
+
+                        <div>
+
+                            <span>
+                                Dataset
+                            </span>
+
+                            <strong id="datasetSize">
+                                100,000 products
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Current query
+                            </span>
+
+                            <strong id="benchmarkQuery">
+                                --
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Current version
+                            </span>
+
+                            <strong>
+                                V1
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="benchmark-table">
+
+                        <!-- V1 -->
+
+                        <div
+                            class="benchmark-row active"
+                            data-version="1"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V1
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        ILIKE
+                                    </strong>
+
+                                    <small>
+                                        Substring baseline
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+
+                                    <span>
+                                        App
+                                    </span>
+
+                                    <strong id="benchmarkV1App">
+                                        -- ms
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        PostgreSQL
+                                    </span>
+
+                                    <strong id="benchmarkV1Database">
+                                        -- ms
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Plan
+                                    </span>
+
+                                    <strong id="benchmarkV1Plan">
+                                        --
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- V2 -->
+
+                        <div
+                            class="benchmark-row"
+                            data-version="2"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V2
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Full-text search
+                                    </strong>
+
+                                    <small>
+                                        Linguistic retrieval
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+                                    <span>App</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>PostgreSQL</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>Plan</span>
+                                    <strong>--</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- V3 -->
+
+                        <div
+                            class="benchmark-row"
+                            data-version="3"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V3
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        FTS + GIN
+                                    </strong>
+
+                                    <small>
+                                        Indexed full-text retrieval
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+                                    <span>App</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>PostgreSQL</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>Plan</span>
+                                    <strong>--</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- V4 -->
+
+                        <div
+                            class="benchmark-row"
+                            data-version="4"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V4
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Weighted ranking
+                                    </strong>
+
+                                    <small>
+                                        Relevance-aware ordering
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+                                    <span>App</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>PostgreSQL</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>Plan</span>
+                                    <strong>--</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- V5 -->
+
+                        <div
+                            class="benchmark-row"
+                            data-version="5"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V5
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Fuzzy fallback
+                                    </strong>
+
+                                    <small>
+                                        Typo-tolerant retrieval
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+                                    <span>App</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>PostgreSQL</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>Plan</span>
+                                    <strong>--</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- V6 -->
+
+                        <div
+                            class="benchmark-row"
+                            data-version="6"
+                        >
+
+                            <div class="benchmark-identity">
+
+                                <span class="benchmark-version">
+                                    V6
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Cached search
+                                    </strong>
+
+                                    <small>
+                                        Redis-assisted retrieval
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="benchmark-measurements">
+
+                                <div>
+                                    <span>App</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>PostgreSQL</span>
+                                    <strong>-- ms</strong>
+                                </div>
+
+                                <div>
+                                    <span>Plan</span>
+                                    <strong>--</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="report-note">
+
+                        <span>
+                            Benchmark rule
+                        </span>
+
+                        <p>
+                            Compare versions using the same dataset,
+                            query, machine, database state and
+                            measurement method. One random run is not
+                            a scientific benchmark.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             SEARCH RESULTS
+             ===================================================== -->
+
+        <section class="results-section">
+
+            <div class="container">
+
+                <div class="section-heading results-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            RESULTS
+                        </span>
+
+                        <h2>
+                            Matching products
+                        </h2>
+
+                    </div>
+
+
+                    <p id="resultsSummary">
+                        Search results will appear here.
+                        The first 10 are shown initially.
+                    </p>
+
+                </div>
+
+
+
+                <div
+                    id="results"
+                    class="results"
+                >
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            /
+                        </div>
+
+                        <h3>
+                            No search yet
+                        </h3>
+
+                        <p>
+                            Run a query above to inspect both its
+                            database behavior and returned products.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    id="seeMoreContainer"
+                    class="see-more-container"
+                    hidden
+                >
+
+                    <button
+                        id="seeMoreButton"
+                        type="button"
+                        class="see-more-button"
+                    >
+                        See more results
+                    </button>
+
+
+                    <span id="seeMoreStatus">
+                        Showing first 10 results
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             V1 EXPLANATION
+             ===================================================== -->
+
+        <section class="learning-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            UNDER THE HOOD
+                        </span>
+
+                        <h2>
+                            Why V1 behaves this way
+                        </h2>
+
+                    </div>
+
+
+                    <p>
+                        Open any topic to review the reasoning behind
+                        the baseline implementation.
+                    </p>
+
+                </div>
+
+
+
+                <div class="learning-list">
+
+                    <!-- 01 -->
+
+                    <details
+                        class="learning-item"
+                        open
+                    >
+
+                        <summary>
+
+                            <span class="learning-number">
+                                01
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    What V1 actually does
+                                </strong>
+
+                                <span>
+                                    The complete search architecture
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                V1 treats search as simple string
+                                pattern matching.
+                            </p>
+
+
+                            <div class="flow-diagram">
+
+                                <span>
+                                    User query
+                                </span>
+
+                                <i>↓</i>
+
+                                <span>
+                                    <code>query.strip()</code>
+                                </span>
+
+                                <i>↓</i>
+
+                                <span>
+                                    <code>%query%</code>
+                                </span>
+
+                                <i>↓</i>
+
+                                <span>
+                                    ILIKE across four columns
+                                </span>
+
+                                <i>↓</i>
+
+                                <span>
+                                    LIMIT 10
+                                </span>
+
+                                <i>↓</i>
+
+                                <span>
+                                    Results
+                                </span>
+
+                            </div>
+
+
+                            <p>
+                                There is no ranking engine, stemming,
+                                fuzzy matching, full-text index or
+                                search-specific infrastructure yet.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 02 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                02
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    LIKE, ILIKE, `%` and `_`
+                                </strong>
+
+                                <span>
+                                    PostgreSQL pattern matching
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                <code>LIKE</code> performs
+                                case-sensitive matching while
+                                PostgreSQL <code>ILIKE</code>
+                                performs case-insensitive matching.
+                            </p>
+
+
+                            <div class="comparison-grid">
+
+                                <div>
+
+                                    <code>
+                                        apple%
+                                    </code>
+
+                                    <span>
+                                        Starts with apple
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <code>
+                                        %apple
+                                    </code>
+
+                                    <span>
+                                        Ends with apple
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <code>
+                                        %apple%
+                                    </code>
+
+                                    <span>
+                                        Contains apple
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <code>
+                                        M_cBook
+                                    </code>
+
+                                    <span>
+                                        `_` represents exactly
+                                        one character
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 03 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                03
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why multi-word search breaks
+                                </strong>
+
+                                <span>
+                                    Substrings are not language
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                Suppose the product is:
+                            </p>
+
+
+                            <pre><code>Logitech Wireless Mechanical Keyboard</code></pre>
+
+
+                            <p>
+                                and the user searches:
+                            </p>
+
+
+                            <pre><code>wireless keyboard</code></pre>
+
+
+                            <p>
+                                V1 creates:
+                            </p>
+
+
+                            <pre><code>%wireless keyboard%</code></pre>
+
+
+                            <p>
+                                That exact contiguous substring does
+                                not exist because
+                                <code>Mechanical</code> appears between
+                                the two words.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 04 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                04
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why there is no stemming
+                                </strong>
+
+                                <span>
+                                    Characters are not linguistic meaning
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                To <code>ILIKE</code>, these are simply
+                                different strings:
+                            </p>
+
+
+                            <div class="word-list">
+
+                                <code>run</code>
+                                <code>runner</code>
+                                <code>running</code>
+                                <code>runs</code>
+
+                            </div>
+
+
+                            <p>
+                                V1 does not know that they share a
+                                linguistic root. PostgreSQL Full-Text
+                                Search will introduce that concept in V2.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 05 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                05
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why there is no relevance ranking
+                                </strong>
+
+                                <span>
+                                    Match versus no match
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                A product containing
+                                <code>MacBook Air</code> in its name
+                                should probably rank above a sleeve that
+                                merely mentions MacBook Air in its
+                                description.
+                            </p>
+
+
+                            <p>
+                                V1 does not naturally calculate:
+                            </p>
+
+
+                            <pre><code>MacBook Air          0.93
+Laptop Sleeve        0.61
+USB-C Charger        0.42</code></pre>
+
+
+                            <p>
+                                Without explicit ranking logic,
+                                matching rows do not have a useful
+                                relevance score.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 06 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                06
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why `%keyboard%` can be expensive
+                                </strong>
+
+                                <span>
+                                    Leading wildcard problem
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                The leading `%` means
+                                <code>keyboard</code> can appear
+                                anywhere inside the stored value.
+                            </p>
+
+
+                            <pre><code>keyboard...
+gaming keyboard...
+wireless keyboard...
+case for keyboard...</code></pre>
+
+
+                            <p>
+                                PostgreSQL therefore cannot simply
+                                assume where the match begins.
+                                Depending on the query and available
+                                indexes, it may inspect many rows.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 07 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                07
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    What a Sequential Scan means
+                                </strong>
+
+                                <span>
+                                    Reading rows and applying the filter
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                If PostgreSQL reports:
+                            </p>
+
+
+                            <pre><code>Seq Scan on products</code></pre>
+
+
+                            <p>
+                                it means PostgreSQL chose to scan table
+                                data and test rows against the search
+                                condition instead of locating candidates
+                                through an appropriate index access path.
+                            </p>
+
+
+                            <p>
+                                The report above translates that into
+                                <strong>Sequential Scan</strong> so you
+                                do not have to memorize planner
+                                abbreviations.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 08 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                08
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    What buffer hits and reads mean
+                                </strong>
+
+                                <span>
+                                    PostgreSQL page activity
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                PostgreSQL works with database pages.
+                            </p>
+
+
+                            <div class="comparison-grid">
+
+                                <div>
+
+                                    <strong>
+                                        Shared hit
+                                    </strong>
+
+                                    <span>
+                                        The required page was already
+                                        available in PostgreSQL's shared
+                                        buffer cache.
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Shared read
+                                    </strong>
+
+                                    <span>
+                                        PostgreSQL needed to bring the
+                                        page into shared buffers.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <p>
+                                This is why the same query can behave
+                                differently between a cold and warm run.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 09 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                09
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why LIMIT 10 can hide scan cost
+                                </strong>
+
+                                <span>
+                                    PostgreSQL may stop early
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                If matches are common, PostgreSQL can
+                                stop after it has produced the ten rows
+                                required by:
+                            </p>
+
+
+                            <pre><code>LIMIT 10</code></pre>
+
+
+                            <p>
+                                A sequential scan therefore does not
+                                automatically mean all 100,000 rows were
+                                inspected.
+                            </p>
+
+
+                            <p>
+                                This is why V1 includes a deliberately
+                                nonexistent test query:
+                            </p>
+
+
+                            <pre><code>qzxneverexists92847</code></pre>
+
+
+                            <p>
+                                PostgreSQL cannot stop early because no
+                                tenth match ever appears.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 10 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                10
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why Python time and PostgreSQL time differ
+                                </strong>
+
+                                <span>
+                                    Two different measurement boundaries
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                <code>perf_counter()</code> measures
+                                application-observed elapsed time around
+                                the database operation.
+                            </p>
+
+
+                            <p>
+                                That can include:
+                            </p>
+
+
+                            <ul>
+
+                                <li>
+                                    Opening the database connection
+                                </li>
+
+                                <li>
+                                    Sending the query
+                                </li>
+
+                                <li>
+                                    PostgreSQL executing it
+                                </li>
+
+                                <li>
+                                    Transferring result data
+                                </li>
+
+                                <li>
+                                    Psycopg converting values
+                                </li>
+
+                                <li>
+                                    Fetching rows
+                                </li>
+
+                            </ul>
+
+
+                            <p>
+                                PostgreSQL's
+                                <code>Execution Time</code>
+                                measures database-side execution from
+                                <code>EXPLAIN ANALYZE</code>.
+                            </p>
+
+
+                            <p>
+                                They are different metrics and should
+                                remain separate.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 11 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                11
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why tracemalloc is not database RAM
+                                </strong>
+
+                                <span>
+                                    Python process versus PostgreSQL
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                <code>tracemalloc</code> tracks Python
+                                memory allocations.
+                            </p>
+
+
+                            <p>
+                                It can observe allocations associated
+                                with Python lists, dictionaries, strings
+                                and Psycopg result objects.
+                            </p>
+
+
+                            <p>
+                                PostgreSQL runs separately, so the
+                                reported peak memory must not be
+                                described as PostgreSQL query memory.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+
+
+                    <!-- 12 -->
+
+                    <details class="learning-item">
+
+                        <summary>
+
+                            <span class="learning-number">
+                                12
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Why V1 exists
+                                </strong>
+
+                                <span>
+                                    Establish the baseline before V2
+                                </span>
+
+                            </div>
+
+                        </summary>
+
+
+                        <div class="learning-content">
+
+                            <p>
+                                V1 deliberately does not solve:
+                            </p>
+
+
+                            <ul>
+
+                                <li>
+                                    stemming
+                                </li>
+
+                                <li>
+                                    tokenization
+                                </li>
+
+                                <li>
+                                    relevance ranking
+                                </li>
+
+                                <li>
+                                    typo tolerance
+                                </li>
+
+                                <li>
+                                    fuzzy search
+                                </li>
+
+                                <li>
+                                    full-text indexes
+                                </li>
+
+                                <li>
+                                    autocomplete
+                                </li>
+
+                                <li>
+                                    caching
+                                </li>
+
+                            </ul>
+
+
+                            <blockquote>
+                                Build the simplest correct search,
+                                measure it, understand where it breaks,
+                                then evolve the architecture deliberately.
+                            </blockquote>
+
+
+                            <div class="next-version">
+
+                                <span>
+                                    NEXT
+                                </span>
+
+                                <strong>
+                                    V2 — PostgreSQL Full-Text Search
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </details>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
+    <footer>
+
+        <div class="container footer-content">
+
+            <div>
+
+                <strong>
+                    SearchLab
+                </strong>
+
+                <span>
+                    Search engineering by iteration.
+                </span>
+
+            </div>
+
+
+            <span>
+                V1 — PostgreSQL ILIKE
+            </span>
+
+        </div>
+
+    </footer>
+
+
+
+    <script
+        type="module"
+        src="./v1.js"
+    ></script>
+
+</body>
+
+</html>
