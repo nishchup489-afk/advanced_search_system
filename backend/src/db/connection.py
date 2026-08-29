@@ -1,4 +1,4 @@
-from advanced_search_system.config import settings 
+from backend.src.advanced_search_system.config import settings 
 import psycopg 
 from psycopg import Connection 
 
