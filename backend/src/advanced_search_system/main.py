@@ -17,9 +17,11 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://advanced-search-system.vercel.app/",
+        "https://advanced-search-system.vercel.app",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:8765",
+        "http://127.0.0.1:8765",
     ],
     allow_credentials=True,
     allow_methods=["*"],

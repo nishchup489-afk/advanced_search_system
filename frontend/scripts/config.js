@@ -12,5 +12,5 @@ const CONFIGURED_API_URL =
 export const API_URL = CONFIGURED_API_URL || (
     IS_LOCAL
         ? "http://127.0.0.1:8000"
-        : window.location.origin
+        : "https://advanced-search-system-cgf4.onrender.com"
 );
