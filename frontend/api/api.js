@@ -1,1 +1,1 @@
-export const API_URL = process.env.API_URL || "http://127.0.0.1:8000";
+export const API_URL = process.env.API_URL || "https://advanced-search-system-cgf4.onrender.com" || "http://127.0.0.1:8000";
