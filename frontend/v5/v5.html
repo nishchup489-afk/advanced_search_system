@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="SearchLab V5 — Redis search result caching over PostgreSQL FTS, GIN indexing and fuzzy fallback."
+    >
+
+    <title>
+        SearchLab — V5 Redis Cache
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./v5.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         BACKGROUND
+    ========================================================== -->
+
+    <div class="background-grid"></div>
+
+    <div class="background-glow glow-left"></div>
+
+    <div class="background-glow glow-right"></div>
+
+
+
+    <!-- =========================================================
+         APP
+    ========================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <header class="site-header">
+
+            <a
+                href="../index.html"
+                class="brand"
+            >
+
+                <div class="brand-mark">
+                    SL
+                </div>
+
+                <div class="brand-copy">
+
+                    <strong>
+                        SearchLab
+                    </strong>
+
+                    <span>
+                        PostgreSQL Search Engineering
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <div class="header-meta">
+
+                <span class="version-chip">
+                    V5
+                </span>
+
+                <span class="engine-chip">
+                    Redis + PostgreSQL
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <main>
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="hero">
+
+                <div class="hero-badge">
+
+                    <span></span>
+
+                    Final Search Architecture
+
+                </div>
+
+
+                <h1>
+
+                    Search once.
+
+                    <span>
+                        Reuse the answer.
+                    </span>
+
+                </h1>
+
+
+                <p>
+                    V5 wraps the complete indexed and typo-tolerant
+                    PostgreSQL search pipeline with Redis result caching.
+                    Cache hits bypass PostgreSQL entirely.
+                </p>
+
+
+
+                <!-- =============================================
+                     SEARCH
+                ============================================== -->
+
+                <div class="search-panel">
+
+                    <form
+                        id="search-form"
+                        class="search-form"
+                    >
+
+                        <div class="search-input-wrapper">
+
+                            <span class="search-icon">
+                                ⌕
+                            </span>
+
+                            <input
+                                id="search-input"
+                                type="search"
+                                placeholder="Try the same query twice..."
+                                autocomplete="off"
+                                required
+                            >
+
+                            <button
+                                id="clear-search-button"
+                                class="clear-button"
+                                type="button"
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            id="search-button"
+                            class="primary-button"
+                            type="submit"
+                        >
+
+                            Search
+
+                            <span>
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+                    <div class="search-examples">
+
+                        <span class="example-label">
+                            Try
+                        </span>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="mechanical keyboard"
+                        >
+                            mechanical keyboard
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="logtech keybord"
+                        >
+                            logtech keybord
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="wireless mouse"
+                        >
+                            wireless mouse
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="samsng"
+                        >
+                            samsng
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 INITIAL STATE
+            ================================================== -->
+
+            <section
+                id="initial-state"
+                class="initial-state"
+            >
+
+                <div class="initial-symbol">
+                    R
+                </div>
+
+                <h2>
+                    Redis cache-aside search
+                </h2>
+
+                <p>
+                    Run a query once to populate Redis, then run the
+                    exact same logical query again to observe a cache
+                    hit and PostgreSQL bypass.
+                </p>
+
+
+                <div class="concept-grid">
+
+                    <article>
+
+                        <span>
+                            01
+                        </span>
+
+                        <h3>
+                            Cache lookup
+                        </h3>
+
+                        <p>
+                            Every request checks Redis before executing
+                            the database search pipeline.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            02
+                        </span>
+
+                        <h3>
+                            Search on miss
+                        </h3>
+
+                        <p>
+                            Cache misses continue through FTS + GIN and
+                            fuzzy fallback when necessary.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            03
+                        </span>
+
+                        <h3>
+                            Reuse on hit
+                        </h3>
+
+                        <p>
+                            Cached search results can be returned without
+                            touching PostgreSQL.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LOADING
+            ================================================== -->
+
+            <section
+                id="loading-state"
+                class="loading-state hidden"
+            >
+
+                <div class="spinner"></div>
+
+                <div>
+
+                    <strong>
+                        Running final search pipeline
+                    </strong>
+
+                    <span>
+                        Checking Redis, PostgreSQL and active retrieval
+                        strategy.
+                    </span>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ERROR
+            ================================================== -->
+
+            <section
+                id="error-state"
+                class="error-state hidden"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <h2>
+                        Search failed
+                    </h2>
+
+                    <p id="error-message">
+                        Something went wrong.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SEARCH OUTPUT
+            ================================================== -->
+
+            <div
+                id="search-output"
+                class="search-output hidden"
+            >
+
+
+                <!-- =============================================
+                     SEARCH REPORT
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                QUERY
+                            </span>
+
+                            <h2>
+                                Search report
+                            </h2>
+
+                        </div>
+
+
+                        <div class="query-box">
+
+                            <span>
+                                Normalized query
+                            </span>
+
+                            <strong id="report-query">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrics-grid">
+
+                        <article class="metric-card">
+
+                            <span>
+                                Results
+                            </span>
+
+                            <strong id="metric-result-count">
+                                —
+                            </strong>
+
+                            <small>
+                                returned products
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Application time
+                            </span>
+
+                            <strong id="metric-application-time">
+                                —
+                            </strong>
+
+                            <small>
+                                request-side benchmark
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Redis lookup
+                            </span>
+
+                            <strong id="metric-cache-lookup">
+                                —
+                            </strong>
+
+                            <small>
+                                cache GET duration
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Peak Python memory
+                            </span>
+
+                            <strong id="metric-peak-memory">
+                                —
+                            </strong>
+
+                            <small>
+                                tracemalloc peak
+                            </small>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     CACHE STATUS
+                ============================================== -->
+
+                <section class="section-card cache-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                REDIS
+                            </span>
+
+                            <h2>
+                                Cache status
+                            </h2>
+
+                            <p>
+                                This is the defining V5 decision point:
+                                return cached results or execute the
+                                search engine.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="cache-status-badge"
+                            class="cache-status-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div class="cache-grid">
+
+                        <article class="cache-card cache-primary">
+
+                            <span class="card-label">
+                                Cache result
+                            </span>
+
+                            <strong id="cache-hit-status">
+                                —
+                            </strong>
+
+                            <p id="cache-hit-description">
+                                Run a query to inspect Redis behavior.
+                            </p>
+
+                        </article>
+
+
+                        <article class="cache-card">
+
+                            <span class="card-label">
+                                Lookup time
+                            </span>
+
+                            <strong id="cache-lookup-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Time spent checking Redis.
+                            </p>
+
+                        </article>
+
+
+                        <article class="cache-card">
+
+                            <span class="card-label">
+                                Write time
+                            </span>
+
+                            <strong id="cache-write-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Cache population time on a miss.
+                            </p>
+
+                        </article>
+
+
+                        <article class="cache-card">
+
+                            <span class="card-label">
+                                TTL
+                            </span>
+
+                            <strong id="cache-ttl">
+                                —
+                            </strong>
+
+                            <p>
+                                Configured cache lifetime.
+                            </p>
+
+                        </article>
+
+
+                        <article class="cache-card">
+
+                            <span class="card-label">
+                                TTL remaining
+                            </span>
+
+                            <strong id="cache-ttl-remaining">
+                                —
+                            </strong>
+
+                            <p>
+                                Remaining lifetime for a cached result.
+                            </p>
+
+                        </article>
+
+
+                        <article class="cache-card cache-key-card">
+
+                            <span class="card-label">
+                                Cache key
+                            </span>
+
+                            <strong id="cache-key">
+                                —
+                            </strong>
+
+                            <p>
+                                Versioned SHA-256 cache namespace.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     CACHE FLOW
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                CACHE-ASIDE
+                            </span>
+
+                            <h2>
+                                Request execution path
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="cache-flow">
+
+                        <div class="flow-node">
+
+                            <span>
+                                1
+                            </span>
+
+                            <strong>
+                                Normalize
+                            </strong>
+
+                            <small>
+                                query text
+                            </small>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="flow-node redis-node">
+
+                            <span>
+                                2
+                            </span>
+
+                            <strong>
+                                Redis GET
+                            </strong>
+
+                            <small>
+                                cache lookup
+                            </small>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="flow-decision">
+
+                            <strong>
+                                HIT?
+                            </strong>
+
+                        </div>
+
+
+                        <div class="branch-stack">
+
+                            <div class="branch-row">
+
+                                <span class="branch-label hit">
+                                    YES
+                                </span>
+
+                                <span class="branch-line"></span>
+
+                                <strong>
+                                    Return cached result
+                                </strong>
+
+                            </div>
+
+
+                            <div class="branch-row">
+
+                                <span class="branch-label miss">
+                                    NO
+                                </span>
+
+                                <span class="branch-line"></span>
+
+                                <strong>
+                                    Execute PostgreSQL
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     DATABASE STATUS
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                DATABASE
+                            </span>
+
+                            <h2>
+                                PostgreSQL execution
+                            </h2>
+
+                            <p>
+                                Cache hits should show PostgreSQL as
+                                completely bypassed.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="database-status-badge"
+                            class="database-status-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div class="database-grid">
+
+                        <article class="database-card database-main">
+
+                            <span class="card-label">
+                                Database executed
+                            </span>
+
+                            <strong id="database-executed">
+                                —
+                            </strong>
+
+                            <p id="database-executed-description">
+                                Waiting for request.
+                            </p>
+
+                        </article>
+
+
+                        <article class="database-card">
+
+                            <span class="card-label">
+                                FTS attempted
+                            </span>
+
+                            <strong id="database-fts-attempted">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="database-card">
+
+                            <span class="card-label">
+                                Fuzzy attempted
+                            </span>
+
+                            <strong id="database-fuzzy-attempted">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="database-card">
+
+                            <span class="card-label">
+                                EXPLAIN executed
+                            </span>
+
+                            <strong id="database-explain-executed">
+                                —
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     STRATEGY
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                SEARCH STRATEGY
+                            </span>
+
+                            <h2>
+                                Retrieval strategy
+                            </h2>
+
+                        </div>
+
+
+                        <span
+                            id="strategy-badge"
+                            class="strategy-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div class="strategy-grid">
+
+                        <article>
+
+                            <span class="card-label">
+                                Strategy
+                            </span>
+
+                            <strong id="strategy-name">
+                                —
+                            </strong>
+
+                            <p>
+                                Original algorithm that produced these
+                                results.
+                            </p>
+
+                        </article>
+
+
+                        <article>
+
+                            <span class="card-label">
+                                Engine
+                            </span>
+
+                            <strong id="strategy-engine">
+                                —
+                            </strong>
+
+                            <p>
+                                PostgreSQL retrieval engine used on the
+                                cache-generating request.
+                            </p>
+
+                        </article>
+
+
+                        <article>
+
+                            <span class="card-label">
+                                Fallback used
+                            </span>
+
+                            <strong id="strategy-fallback-used">
+                                —
+                            </strong>
+
+                            <p>
+                                Whether trigram fuzzy recovery was
+                                necessary.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     TIMING BREAKDOWN
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                PERFORMANCE
+                            </span>
+
+                            <h2>
+                                Timing breakdown
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timing-grid">
+
+                        <article>
+
+                            <span>
+                                Redis lookup
+                            </span>
+
+                            <strong id="timing-cache-lookup">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article>
+
+                            <span>
+                                FTS
+                            </span>
+
+                            <strong id="timing-fts">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article>
+
+                            <span>
+                                Fuzzy fallback
+                            </span>
+
+                            <strong id="timing-fuzzy">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article>
+
+                            <span>
+                                Redis write
+                            </span>
+
+                            <strong id="timing-cache-write">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article>
+
+                            <span>
+                                EXPLAIN
+                            </span>
+
+                            <strong id="timing-explain">
+                                —
+                            </strong>
+
+                        </article>
+
+
+                        <article class="timing-total">
+
+                            <span>
+                                Application total
+                            </span>
+
+                            <strong id="timing-application-total">
+                                —
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     POSTGRESQL EXECUTION REPORT
+                ============================================== -->
+
+                <section
+                    id="postgres-report-section"
+                    class="section-card"
+                >
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                POSTGRESQL
+                            </span>
+
+                            <h2>
+                                Execution report
+                            </h2>
+
+                            <p id="postgres-report-description">
+                                Available when PostgreSQL executes.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="plan-scan-badge"
+                            class="plan-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="postgres-bypassed"
+                        class="postgres-bypassed hidden"
+                    >
+
+                        <div class="bypass-icon">
+                            ⚡
+                        </div>
+
+                        <h3>
+                            PostgreSQL bypassed
+                        </h3>
+
+                        <p>
+                            Redis returned the cached search result, so
+                            no SQL query or EXPLAIN ANALYZE was executed.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="postgres-execution-content"
+                    >
+
+                        <div class="execution-grid">
+
+                            <article class="execution-card operation-card">
+
+                                <span class="card-label">
+                                    Primary operation
+                                </span>
+
+                                <strong id="plan-primary-operation">
+                                    —
+                                </strong>
+
+                                <p id="plan-primary-description">
+                                    Waiting for execution plan.
+                                </p>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Planning time
+                                </span>
+
+                                <strong id="plan-planning-time">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Execution time
+                                </span>
+
+                                <strong id="plan-execution-time">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Rows removed
+                                </span>
+
+                                <strong id="plan-rows-removed">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Shared hits
+                                </span>
+
+                                <strong id="plan-shared-hit">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Shared reads
+                                </span>
+
+                                <strong id="plan-shared-read">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    First row
+                                </span>
+
+                                <strong id="plan-first-row-time">
+                                    —
+                                </strong>
+
+                            </article>
+
+
+                            <article class="execution-card">
+
+                                <span class="card-label">
+                                    Node completion
+                                </span>
+
+                                <strong id="plan-last-row-time">
+                                    —
+                                </strong>
+
+                            </article>
+
+                        </div>
+
+
+                        <div class="raw-grid">
+
+                            <details class="technical-panel">
+
+                                <summary>
+
+                                    <span>
+                                        Raw SQL
+                                    </span>
+
+                                    <span class="details-icon">
+                                        +
+                                    </span>
+
+                                </summary>
+
+
+                                <div class="technical-content">
+
+                                    <button
+                                        type="button"
+                                        class="copy-button"
+                                        data-copy-target="raw-sql"
+                                    >
+                                        Copy
+                                    </button>
+
+                                    <pre><code id="raw-sql"></code></pre>
+
+                                </div>
+
+                            </details>
+
+
+                            <details class="technical-panel">
+
+                                <summary>
+
+                                    <span>
+                                        Raw EXPLAIN response
+                                    </span>
+
+                                    <span class="details-icon">
+                                        +
+                                    </span>
+
+                                </summary>
+
+
+                                <div class="technical-content">
+
+                                    <button
+                                        type="button"
+                                        class="copy-button"
+                                        data-copy-target="raw-explain"
+                                    >
+                                        Copy
+                                    </button>
+
+                                    <pre><code id="raw-explain"></code></pre>
+
+                                </div>
+
+                            </details>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     COMPLETE PIPELINE
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                ARCHITECTURE
+                            </span>
+
+                            <h2>
+                                Final SearchLab pipeline
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="pipeline-list">
+
+                        <div class="pipeline-item">
+
+                            <span>
+                                01
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Query normalization
+                                </strong>
+
+                                <small>
+                                    Lowercase + whitespace normalization
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="pipeline-arrow">
+                            ↓
+                        </span>
+
+
+                        <div class="pipeline-item highlight-redis">
+
+                            <span>
+                                02
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Redis cache lookup
+                                </strong>
+
+                                <small>
+                                    Cache-aside GET
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="pipeline-arrow">
+                            ↓
+                        </span>
+
+
+                        <div class="pipeline-item">
+
+                            <span>
+                                03
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Full-Text Search
+                                </strong>
+
+                                <small>
+                                    persisted tsvector + GIN
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="pipeline-arrow">
+                            ↓
+                        </span>
+
+
+                        <div class="pipeline-item">
+
+                            <span>
+                                04
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Fuzzy fallback
+                                </strong>
+
+                                <small>
+                                    pg_trgm similarity
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="pipeline-arrow">
+                            ↓
+                        </span>
+
+
+                        <div class="pipeline-item highlight-redis">
+
+                            <span>
+                                05
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Redis SET + TTL
+                                </strong>
+
+                                <small>
+                                    Store final search result
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="pipeline-arrow">
+                            ↓
+                        </span>
+
+
+                        <div class="pipeline-item">
+
+                            <span>
+                                06
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    FastAPI response
+                                </strong>
+
+                                <small>
+                                    Return results + diagnostics
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     VERSION COMPARISON
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                BENCHMARK
+                            </span>
+
+                            <h2>
+                                V1 → V5
+                            </h2>
+
+                            <p>
+                                Evolution from raw substring search to
+                                cache-backed multi-stage retrieval.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="comparison-table-wrapper">
+
+                        <table class="comparison-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Version
+                                    </th>
+
+                                    <th>
+                                        Architecture
+                                    </th>
+
+                                    <th>
+                                        Results
+                                    </th>
+
+                                    <th>
+                                        App time
+                                    </th>
+
+                                    <th>
+                                        DB executed
+                                    </th>
+
+                                    <th>
+                                        Cache
+                                    </th>
+
+                                    <th>
+                                        Main improvement
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V1
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        ILIKE
+                                    </td>
+
+                                    <td id="comparison-v1-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-time">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                        None
+                                    </td>
+
+                                    <td>
+                                        Substring matching
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V2
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        Runtime FTS
+                                    </td>
+
+                                    <td id="comparison-v2-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-time">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                        None
+                                    </td>
+
+                                    <td>
+                                        Linguistic retrieval
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V3
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        FTS + GIN
+                                    </td>
+
+                                    <td id="comparison-v3-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-time">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                        None
+                                    </td>
+
+                                    <td>
+                                        Indexed retrieval
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V4
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        FTS + fuzzy
+                                    </td>
+
+                                    <td id="comparison-v4-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v4-time">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                        None
+                                    </td>
+
+                                    <td>
+                                        Typo recovery
+                                    </td>
+
+                                </tr>
+
+
+                                <tr class="active-comparison-row">
+
+                                    <td>
+                                        <span class="version-pill active">
+                                            V5
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        Redis + V4 pipeline
+                                    </td>
+
+                                    <td id="comparison-v5-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v5-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v5-db">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v5-cache">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Result reuse
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     RESULTS
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                RESULTS
+                            </span>
+
+                            <h2>
+                                Search results
+                            </h2>
+
+                            <p id="results-description">
+                                Results from the active search path.
+                            </p>
+
+                        </div>
+
+
+                        <div class="visible-count">
+
+                            <strong id="results-visible-count">
+                                0
+                            </strong>
+
+                            <span>
+                                shown
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="results-container"
+                        class="results-list"
+                    >
+                    </div>
+
+
+                    <div class="see-more-wrapper">
+
+                        <button
+                            id="see-more-button"
+                            class="secondary-button hidden"
+                            type="button"
+                        >
+
+                            See more results
+
+                            <span>
+                                ↓
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     EXPLANATION
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                EXPLANATION
+                            </span>
+
+                            <h2>
+                                What changed in V5?
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="docs-grid">
+
+                        <article class="docs-card">
+
+                            <span>
+                                01
+                            </span>
+
+                            <h3>
+                                Cache-aside
+                            </h3>
+
+                            <p>
+                                Redis is checked before PostgreSQL. On a
+                                miss, the database result is stored for
+                                future requests.
+                            </p>
+
+                            <code>
+                                GET → MISS → DB → SET
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                02
+                            </span>
+
+                            <h3>
+                                Database bypass
+                            </h3>
+
+                            <p>
+                                A cache hit returns the final result
+                                without executing FTS, fuzzy search or
+                                EXPLAIN.
+                            </p>
+
+                            <code>
+                                database.executed = false
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                03
+                            </span>
+
+                            <h3>
+                                TTL
+                            </h3>
+
+                            <p>
+                                Cached results expire automatically so
+                                stale search responses do not persist
+                                indefinitely.
+                            </p>
+
+                            <code>
+                                ex = 300
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                04
+                            </span>
+
+                            <h3>
+                                Graceful degradation
+                            </h3>
+
+                            <p>
+                                Redis is an optimization. If it fails,
+                                PostgreSQL remains the source of truth.
+                            </p>
+
+                            <code>
+                                RedisError → PostgreSQL
+                            </code>
+
+                        </article>
+
+                    </div>
+
+
+                    <details class="deep-dive">
+
+                        <summary>
+
+                            <span>
+                                Why Redis belongs after search quality
+                                and indexing
+                            </span>
+
+                            <span class="details-icon">
+                                +
+                            </span>
+
+                        </summary>
+
+
+                        <div class="deep-dive-content">
+
+                            <p>
+                                Redis cannot improve relevance, fix poor
+                                fuzzy scoring or repair bad SQL. It only
+                                makes previously computed results cheaper
+                                to retrieve.
+                            </p>
+
+
+                            <div class="lesson-grid">
+
+                                <article>
+
+                                    <span>
+                                        V2
+                                    </span>
+
+                                    <strong>
+                                        Understand
+                                    </strong>
+
+                                    <p>
+                                        Linguistic retrieval.
+                                    </p>
+
+                                </article>
+
+
+                                <article>
+
+                                    <span>
+                                        V3
+                                    </span>
+
+                                    <strong>
+                                        Retrieve
+                                    </strong>
+
+                                    <p>
+                                        Efficient candidate lookup.
+                                    </p>
+
+                                </article>
+
+
+                                <article>
+
+                                    <span>
+                                        V4
+                                    </span>
+
+                                    <strong>
+                                        Recover
+                                    </strong>
+
+                                    <p>
+                                        Handle imperfect queries.
+                                    </p>
+
+                                </article>
+
+
+                                <article>
+
+                                    <span>
+                                        V5
+                                    </span>
+
+                                    <strong>
+                                        Reuse
+                                    </strong>
+
+                                    <p>
+                                        Avoid repeated computation.
+                                    </p>
+
+                                </article>
+
+                            </div>
+
+                        </div>
+
+                    </details>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="site-footer">
+
+            <span>
+                SearchLab
+            </span>
+
+            <span>
+                V5 · Redis · FTS · GIN · pg_trgm
+            </span>
+
+        </footer>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SCRIPTS
+    ========================================================== -->
+
+    <script
+        type="module"
+        src="./v5.js"
+    ></script>
+
+</body>
+
+</html>
