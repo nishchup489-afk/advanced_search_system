@@ -100,6 +100,26 @@ body.has-global-navigation > .navbar {
     outline-offset: 3px;
 }
 
+.version-docs-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 8px;
+    color: #aeb9c8;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.version-docs-link:hover {
+    border-color: rgba(100, 209, 139, 0.3);
+    color: #c7f1d6;
+}
+
 @media (max-width: 780px) {
     .global-navigation__inner {
         position: relative;
