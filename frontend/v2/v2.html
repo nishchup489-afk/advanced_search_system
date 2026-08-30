@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Advanced Search System V2 - PostgreSQL Full-Text Search"
+    >
+
+    <title>
+        Advanced Search System — V2 Full-Text Search
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./v2.css"
+    >
+</head>
+
+<body>
+
+    <!-- =========================================================
+         BACKGROUND
+    ========================================================== -->
+
+    <div class="background-grid"></div>
+    <div class="background-glow background-glow-one"></div>
+    <div class="background-glow background-glow-two"></div>
+
+
+    <!-- =========================================================
+         APP SHELL
+    ========================================================== -->
+
+    <div class="app-shell">
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <header class="site-header">
+
+            <a
+                class="brand"
+                href="../index.html"
+                aria-label="Advanced Search System home"
+            >
+                <div class="brand-mark">
+                    AS
+                </div>
+
+                <div class="brand-copy">
+                    <span class="brand-title">
+                        Advanced Search System
+                    </span>
+
+                    <span class="brand-subtitle">
+                        Search architecture laboratory
+                    </span>
+                </div>
+            </a>
+
+
+            <div class="header-actions">
+
+                <span class="version-chip">
+                    V2
+                </span>
+
+                <span class="engine-chip">
+                    PostgreSQL Full-Text Search
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <main>
+
+            <section class="hero-section">
+
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Version 2 · Linguistic Retrieval
+                </div>
+
+                <h1>
+                    Search meaning,
+                    <span>not just substrings.</span>
+                </h1>
+
+                <p class="hero-description">
+                    V2 replaces raw substring matching with PostgreSQL
+                    full-text search using tokenization, lexemes,
+                    stemming, weighted fields, <code>tsquery</code>,
+                    relevance ranking and contextual headlines.
+                </p>
+
+
+                <div class="search-panel">
+
+                    <form
+                        id="search-form"
+                        class="search-form"
+                    >
+
+                        <div class="search-input-wrapper">
+
+                            <span class="search-icon">
+                                ⌕
+                            </span>
+
+                            <input
+                                id="search-input"
+                                name="q"
+                                type="search"
+                                autocomplete="off"
+                                placeholder='Try: gaming mechanical keyboard'
+                                aria-label="Search products"
+                                required
+                            >
+
+                            <button
+                                id="clear-search-button"
+                                class="clear-search-button"
+                                type="button"
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                        <button
+                            id="search-button"
+                            class="primary-button"
+                            type="submit"
+                        >
+                            <span>
+                                Search
+                            </span>
+
+                            <span class="button-arrow">
+                                →
+                            </span>
+                        </button>
+
+                    </form>
+
+
+                    <div class="search-examples">
+
+                        <span class="example-label">
+                            Try
+                        </span>
+
+                        <button
+                            class="query-example"
+                            type="button"
+                            data-query="gaming mechanical keyboard"
+                        >
+                            gaming mechanical keyboard
+                        </button>
+
+                        <button
+                            class="query-example"
+                            type="button"
+                            data-query='"wireless mouse"'
+                        >
+                            "wireless mouse"
+                        </button>
+
+                        <button
+                            class="query-example"
+                            type="button"
+                            data-query="apple OR samsung"
+                        >
+                            apple OR samsung
+                        </button>
+
+                        <button
+                            class="query-example"
+                            type="button"
+                            data-query="gaming -wireless"
+                        >
+                            gaming -wireless
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 INITIAL / EMPTY STATE
+            ================================================== -->
+
+            <section
+                id="initial-state"
+                class="initial-state"
+            >
+
+                <div class="initial-icon">
+                    Aa
+                </div>
+
+                <h2>
+                    PostgreSQL linguistic search
+                </h2>
+
+                <p>
+                    Enter a query to inspect full-text matching,
+                    ranking, application performance and the database
+                    execution plan.
+                </p>
+
+
+                <div class="concept-grid">
+
+                    <article class="concept-card">
+
+                        <span class="concept-number">
+                            01
+                        </span>
+
+                        <h3>
+                            Tokenization
+                        </h3>
+
+                        <p>
+                            Raw product text is broken into searchable
+                            linguistic tokens.
+                        </p>
+
+                    </article>
+
+
+                    <article class="concept-card">
+
+                        <span class="concept-number">
+                            02
+                        </span>
+
+                        <h3>
+                            Lexemes
+                        </h3>
+
+                        <p>
+                            Words are normalized so related forms can
+                            map toward common searchable terms.
+                        </p>
+
+                    </article>
+
+
+                    <article class="concept-card">
+
+                        <span class="concept-number">
+                            03
+                        </span>
+
+                        <h3>
+                            Ranking
+                        </h3>
+
+                        <p>
+                            Matching products receive relevance scores
+                            using <code>ts_rank_cd()</code>.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LOADING
+            ================================================== -->
+
+            <section
+                id="loading-state"
+                class="loading-state hidden"
+                aria-live="polite"
+            >
+
+                <div class="loading-spinner"></div>
+
+                <div>
+                    <strong>
+                        Running full-text search
+                    </strong>
+
+                    <span>
+                        Building vectors, matching lexemes and
+                        analyzing PostgreSQL execution.
+                    </span>
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 ERROR
+            ================================================== -->
+
+            <section
+                id="error-state"
+                class="error-state hidden"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+                    <h2>
+                        Search failed
+                    </h2>
+
+                    <p id="error-message">
+                        Something went wrong while executing the query.
+                    </p>
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SEARCH OUTPUT
+            ================================================== -->
+
+            <div
+                id="search-output"
+                class="search-output hidden"
+            >
+
+                <!-- =============================================
+                     QUERY SUMMARY
+                ============================================== -->
+
+                <section class="section-block">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                Query
+                            </span>
+
+                            <h2>
+                                Search report
+                            </h2>
+                        </div>
+
+
+                        <div class="query-summary">
+
+                            <span>
+                                Query
+                            </span>
+
+                            <strong id="report-query">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-summary-grid">
+
+                        <article class="summary-card">
+
+                            <span class="summary-label">
+                                Results
+                            </span>
+
+                            <strong
+                                id="metric-result-count"
+                                class="summary-value"
+                            >
+                                —
+                            </strong>
+
+                            <span class="summary-description">
+                                matching products
+                            </span>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <span class="summary-label">
+                                Application time
+                            </span>
+
+                            <strong
+                                id="metric-application-time"
+                                class="summary-value"
+                            >
+                                —
+                            </strong>
+
+                            <span class="summary-description">
+                                Python → PostgreSQL → Python
+                            </span>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <span class="summary-label">
+                                PostgreSQL execution
+                            </span>
+
+                            <strong
+                                id="metric-db-execution-time"
+                                class="summary-value"
+                            >
+                                —
+                            </strong>
+
+                            <span class="summary-description">
+                                database executor
+                            </span>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <span class="summary-label">
+                                Peak Python memory
+                            </span>
+
+                            <strong
+                                id="metric-peak-memory"
+                                class="summary-value"
+                            >
+                                —
+                            </strong>
+
+                            <span class="summary-description">
+                                traced application allocation
+                            </span>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     EXECUTION REPORT
+                ============================================== -->
+
+                <section class="section-block">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                PostgreSQL
+                            </span>
+
+                            <h2>
+                                Execution report
+                            </h2>
+
+                            <p>
+                                Human-readable interpretation of
+                                <code>EXPLAIN ANALYZE</code>.
+                            </p>
+                        </div>
+
+
+                        <span
+                            id="plan-scan-badge"
+                            class="status-badge"
+                        >
+                            Waiting for plan
+                        </span>
+
+                    </div>
+
+
+                    <div class="execution-grid">
+
+                        <article class="execution-card execution-card-large">
+
+                            <div class="execution-card-header">
+
+                                <div class="execution-icon">
+                                    DB
+                                </div>
+
+                                <div>
+                                    <span class="execution-label">
+                                        Primary operation
+                                    </span>
+
+                                    <h3 id="plan-primary-operation">
+                                        —
+                                    </h3>
+                                </div>
+
+                            </div>
+
+                            <p id="plan-primary-description">
+                                Execution information will appear here
+                                after a search.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                Planning time
+                            </span>
+
+                            <strong
+                                id="plan-planning-time"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Time PostgreSQL spent constructing the
+                                execution strategy.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                Execution time
+                            </span>
+
+                            <strong
+                                id="plan-execution-time"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Server-side time reported by
+                                PostgreSQL.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                Rows removed
+                            </span>
+
+                            <strong
+                                id="plan-rows-removed"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Rows inspected but rejected by the
+                                full-text filter.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                Shared buffer hits
+                            </span>
+
+                            <strong
+                                id="plan-shared-hit"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Pages obtained from PostgreSQL's shared
+                                buffer cache.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                First row
+                            </span>
+
+                            <strong
+                                id="plan-first-row-time"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Time until the selected node produced
+                                its first result.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="execution-label">
+                                Node completion
+                            </span>
+
+                            <strong
+                                id="plan-last-row-time"
+                                class="execution-value"
+                            >
+                                —
+                            </strong>
+
+                            <p>
+                                Time until the selected node completed
+                                its work.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         PLAN PIPELINE
+                    ========================================== -->
+
+                    <div class="plan-pipeline-card">
+
+                        <div class="subsection-heading">
+
+                            <div>
+                                <span class="eyebrow">
+                                    Execution flow
+                                </span>
+
+                                <h3>
+                                    What PostgreSQL did
+                                </h3>
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="execution-pipeline"
+                            class="execution-pipeline"
+                        >
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    1
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Sequential scan
+                                    </strong>
+
+                                    <span>
+                                        Inspect products row by row.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    2
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Build tsvector
+                                    </strong>
+
+                                    <span>
+                                        Normalize searchable fields.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    3
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Full-text filter
+                                    </strong>
+
+                                    <span>
+                                        Evaluate
+                                        <code>@@</code>.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    4
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Rank
+                                    </strong>
+
+                                    <span>
+                                        Calculate
+                                        <code>ts_rank_cd()</code>.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    5
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        Sort
+                                    </strong>
+
+                                    <span>
+                                        Highest relevance first.
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         RAW TECHNICAL OUTPUT
+                    ========================================== -->
+
+                    <div class="raw-panels">
+
+                        <details class="technical-details">
+
+                            <summary>
+                                <span>
+                                    Raw SQL query
+                                </span>
+
+                                <span class="details-indicator">
+                                    +
+                                </span>
+                            </summary>
+
+                            <div class="technical-content">
+
+                                <button
+                                    class="copy-button"
+                                    type="button"
+                                    data-copy-target="raw-sql"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-sql"></code></pre>
+
+                            </div>
+
+                        </details>
+
+
+                        <details class="technical-details">
+
+                            <summary>
+                                <span>
+                                    Raw EXPLAIN response
+                                </span>
+
+                                <span class="details-indicator">
+                                    +
+                                </span>
+                            </summary>
+
+                            <div class="technical-content">
+
+                                <button
+                                    class="copy-button"
+                                    type="button"
+                                    data-copy-target="raw-explain"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-explain"></code></pre>
+
+                            </div>
+
+                        </details>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     FTS ARCHITECTURE
+                ============================================== -->
+
+                <section class="section-block">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                Full-text search
+                            </span>
+
+                            <h2>
+                                Linguistic retrieval pipeline
+                            </h2>
+
+                            <p>
+                                V2 transforms raw product fields into
+                                weighted searchable lexemes.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="weight-grid">
+
+                        <article class="weight-card weight-a">
+
+                            <div class="weight-letter">
+                                A
+                            </div>
+
+                            <div>
+                                <span class="weight-label">
+                                    Highest weight
+                                </span>
+
+                                <h3>
+                                    Product name
+                                </h3>
+
+                                <p>
+                                    Name matches contribute most
+                                    strongly to ranking.
+                                </p>
+                            </div>
+
+                        </article>
+
+
+                        <article class="weight-card weight-b">
+
+                            <div class="weight-letter">
+                                B
+                            </div>
+
+                            <div>
+                                <span class="weight-label">
+                                    High relevance
+                                </span>
+
+                                <h3>
+                                    Brand + category
+                                </h3>
+
+                                <p>
+                                    Strong metadata signals about what
+                                    the product is.
+                                </p>
+                            </div>
+
+                        </article>
+
+
+                        <article class="weight-card weight-c">
+
+                            <div class="weight-letter">
+                                C
+                            </div>
+
+                            <div>
+                                <span class="weight-label">
+                                    Supporting metadata
+                                </span>
+
+                                <h3>
+                                    Tags
+                                </h3>
+
+                                <p>
+                                    Associated terms contribute to
+                                    relevance with lower weight.
+                                </p>
+                            </div>
+
+                        </article>
+
+
+                        <article class="weight-card weight-d">
+
+                            <div class="weight-letter">
+                                D
+                            </div>
+
+                            <div>
+                                <span class="weight-label">
+                                    Lowest weight
+                                </span>
+
+                                <h3>
+                                    Description
+                                </h3>
+
+                                <p>
+                                    Description matches remain valid but
+                                    contribute less to ranking.
+                                </p>
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="fts-flow">
+
+                        <div class="fts-node">
+                            <span>
+                                Raw fields
+                            </span>
+
+                            <strong>
+                                Product text
+                            </strong>
+                        </div>
+
+                        <span class="fts-arrow">
+                            →
+                        </span>
+
+                        <div class="fts-node">
+                            <span>
+                                Normalize
+                            </span>
+
+                            <strong>
+                                to_tsvector()
+                            </strong>
+                        </div>
+
+                        <span class="fts-arrow">
+                            →
+                        </span>
+
+                        <div class="fts-node">
+                            <span>
+                                Representation
+                            </span>
+
+                            <strong>
+                                Lexemes
+                            </strong>
+                        </div>
+
+                        <span class="fts-arrow">
+                            →
+                        </span>
+
+                        <div class="fts-node">
+                            <span>
+                                Match
+                            </span>
+
+                            <strong>
+                                @@ tsquery
+                            </strong>
+                        </div>
+
+                        <span class="fts-arrow">
+                            →
+                        </span>
+
+                        <div class="fts-node">
+                            <span>
+                                Relevance
+                            </span>
+
+                            <strong>
+                                ts_rank_cd()
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     VERSION COMPARISON
+                ============================================== -->
+
+                <section class="section-block">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                Benchmark
+                            </span>
+
+                            <h2>
+                                Version comparison
+                            </h2>
+
+                            <p>
+                                Compare architectural and runtime
+                                changes across implemented search
+                                versions.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="comparison-table">
+
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Version
+                                    </th>
+
+                                    <th>
+                                        Strategy
+                                    </th>
+
+                                    <th>
+                                        Results
+                                    </th>
+
+                                    <th>
+                                        App time
+                                    </th>
+
+                                    <th>
+                                        DB execution
+                                    </th>
+
+                                    <th>
+                                        Peak memory
+                                    </th>
+
+                                    <th>
+                                        Scan
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="version-comparison-body">
+
+                                <tr>
+                                    <td>
+                                        <span class="table-version">
+                                            V1
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        LIKE / ILIKE
+                                    </td>
+
+                                    <td id="comparison-v1-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-memory">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-scan">
+                                        —
+                                    </td>
+                                </tr>
+
+
+                                <tr class="active-version-row">
+                                    <td>
+                                        <span class="table-version active">
+                                            V2
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        PostgreSQL FTS
+                                    </td>
+
+                                    <td id="comparison-v2-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-memory">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-scan">
+                                        —
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     RESULTS
+                ============================================== -->
+
+                <section class="section-block results-section">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                Results
+                            </span>
+
+                            <h2>
+                                Ranked products
+                            </h2>
+
+                            <p>
+                                Products are ordered by
+                                <code>ts_rank_cd()</code> relevance.
+                            </p>
+                        </div>
+
+
+                        <div class="results-count-badge">
+
+                            <strong id="results-visible-count">
+                                0
+                            </strong>
+
+                            <span>
+                                shown
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="results-container"
+                        class="results-list"
+                    >
+                    </div>
+
+
+                    <div class="see-more-wrapper">
+
+                        <button
+                            id="see-more-button"
+                            class="secondary-button hidden"
+                            type="button"
+                        >
+                            See more results
+                            <span>
+                                ↓
+                            </span>
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     EXPLANATION / DOCUMENTATION
+                ============================================== -->
+
+                <section class="section-block documentation-section">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="eyebrow">
+                                Explanation
+                            </span>
+
+                            <h2>
+                                What changed in V2?
+                            </h2>
+
+                            <p>
+                                V2 improves search semantics, not yet
+                                retrieval efficiency.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="documentation-grid">
+
+                        <article class="documentation-card">
+
+                            <span class="documentation-index">
+                                01
+                            </span>
+
+                            <h3>
+                                From substrings to lexemes
+                            </h3>
+
+                            <p>
+                                V1 compares raw character sequences.
+                                V2 converts text into normalized
+                                linguistic terms before matching.
+                            </p>
+
+                            <code>
+                                to_tsvector('english', text)
+                            </code>
+
+                        </article>
+
+
+                        <article class="documentation-card">
+
+                            <span class="documentation-index">
+                                02
+                            </span>
+
+                            <h3>
+                                Search-engine style queries
+                            </h3>
+
+                            <p>
+                                User input is converted with
+                                <code>websearch_to_tsquery()</code>,
+                                enabling normal words, quoted phrases,
+                                OR and exclusions.
+                            </p>
+
+                            <code>
+                                "gaming keyboard" -wireless
+                            </code>
+
+                        </article>
+
+
+                        <article class="documentation-card">
+
+                            <span class="documentation-index">
+                                03
+                            </span>
+
+                            <h3>
+                                Relevance ranking
+                            </h3>
+
+                            <p>
+                                Matching products are no longer merely
+                                true or false. PostgreSQL calculates a
+                                relevance score.
+                            </p>
+
+                            <code>
+                                ts_rank_cd(vector, query)
+                            </code>
+
+                        </article>
+
+
+                        <article class="documentation-card">
+
+                            <span class="documentation-index">
+                                04
+                            </span>
+
+                            <h3>
+                                Still no search index
+                            </h3>
+
+                            <p>
+                                V2 intentionally constructs
+                                <code>tsvector</code> values during the
+                                query. A dedicated GIN index arrives in
+                                V3.
+                            </p>
+
+                            <code>
+                                V2 → linguistic, unindexed
+                            </code>
+
+                        </article>
+
+                    </div>
+
+
+                    <details class="deep-dive">
+
+                        <summary>
+                            <span>
+                                Deep dive: why V2 may still be slow
+                            </span>
+
+                            <span class="details-indicator">
+                                +
+                            </span>
+                        </summary>
+
+                        <div class="deep-dive-content">
+
+                            <p>
+                                PostgreSQL now understands words better,
+                                but without a full-text index it may
+                                still inspect large portions of the
+                                product table.
+                            </p>
+
+                            <div class="code-flow">
+
+                                <code>
+                                    Scan product
+                                </code>
+
+                                <span>
+                                    →
+                                </span>
+
+                                <code>
+                                    Construct tsvector
+                                </code>
+
+                                <span>
+                                    →
+                                </span>
+
+                                <code>
+                                    Evaluate @@
+                                </code>
+
+                                <span>
+                                    →
+                                </span>
+
+                                <code>
+                                    Rank match
+                                </code>
+
+                            </div>
+
+                            <p>
+                                This separation is intentional: V2
+                                measures the semantic improvement, while
+                                V3 will measure the effect of adding an
+                                inverted GIN index.
+                            </p>
+
+                        </div>
+
+                    </details>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="site-footer">
+
+            <span>
+                Advanced Search System
+            </span>
+
+            <span>
+                V2 · PostgreSQL Full-Text Search
+            </span>
+
+        </footer>
+
+    </div>
+
+
+    <!-- =========================================================
+         SCRIPTS
+    ========================================================== -->
+
+    <script
+        type="module"
+        src="./v2.js"
+    ></script>
+
+</body>
+</html>

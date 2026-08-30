@@ -2,9 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from advanced_search_system.api.v1 import router as v1_router
-
-
-
+from advanced_search_system.api.v2 import router as v2_router
 
 app = FastAPI(
     title="SearchLab API",
@@ -36,9 +34,7 @@ def root():
 
 
 app.include_router(v1_router)
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Advanced Search Lab API!"}
+app.include_router(v2_router)
 
 
 @app.get("/health")
