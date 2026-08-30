@@ -6,6 +6,12 @@ const guides = [
     { id: "v3", label: "V3", title: "FTS + GIN", file: "./content/v3.md" },
     { id: "v4", label: "V4", title: "Fuzzy recovery", file: "./content/v4.md" },
     { id: "v5", label: "V5", title: "Redis caching", file: "./content/v5.md" },
+    {
+        id: "v5-implementation",
+        label: "V5 BUILD",
+        title: "Implementation guide",
+        file: "./content/v5-implementation.md",
+    },
 ];
 
 const versionNavigation = document.getElementById("docs-version-navigation");

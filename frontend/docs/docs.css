@@ -85,7 +85,7 @@ button, input { font: inherit; }
 .docs-version-navigation { display: grid; gap: 7px; margin-top: 12px; }
 .docs-version-navigation a {
     display: grid;
-    grid-template-columns: 35px 1fr;
+    grid-template-columns: 68px 1fr;
     align-items: center;
     min-height: 46px;
     padding: 6px 10px;
@@ -165,8 +165,14 @@ button, input { font: inherit; }
     .docs-hero { grid-template-columns: 1fr; padding-top: 54px; gap: 28px; }
     .docs-layout { grid-template-columns: 1fr; }
     .docs-sidebar__sticky { position: static; }
-    .docs-version-navigation { grid-template-columns: repeat(5, minmax(0, 1fr)); overflow-x: auto; }
-    .docs-version-navigation a { grid-template-columns: 1fr; min-width: 105px; }
+    .docs-version-navigation {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(116px, 1fr);
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+    }
+    .docs-version-navigation a { grid-template-columns: 1fr; min-width: 0; }
     .docs-toc-wrap { display: none; }
 }
 
@@ -174,7 +180,7 @@ button, input { font: inherit; }
     .docs-hero, .docs-layout { width: min(calc(100% - 28px), 1380px); }
     .docs-hero { padding: 44px 0 34px; }
     .docs-layout { padding-top: 24px; gap: 30px; }
-    .docs-version-navigation { grid-template-columns: repeat(5, 108px); }
+    .docs-version-navigation { grid-auto-columns: 116px; }
     .markdown-body { font-size: 0.93rem; line-height: 1.75; }
     .markdown-body h2 { margin-top: 52px; }
     .markdown-body pre { padding: 15px; }
