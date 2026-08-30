@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from advanced_search_system.api.v1 import router as v1_router
 from advanced_search_system.api.v2 import router as v2_router
+from advanced_search_system.api.v3 import router as v3_router
 
 app = FastAPI(
     title="SearchLab API",
@@ -35,6 +36,7 @@ def root():
 
 app.include_router(v1_router)
 app.include_router(v2_router)
+app.include_router(v3_router)
 
 
 @app.get("/health")

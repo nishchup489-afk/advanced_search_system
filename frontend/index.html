@@ -437,71 +437,6 @@
                             </span>
 
                             <span class="status">
-                                RELEVANCE
-                            </span>
-
-                        </div>
-
-
-                        <h3>
-                            Weighted Ranking
-                        </h3>
-
-
-                        <p>
-                            Stop treating every match equally.
-                            Weight important fields and order results
-                            using PostgreSQL relevance scores.
-                        </p>
-
-
-                        <div class="tags">
-
-                            <span>
-                                ts_rank
-                            </span>
-
-                            <span>
-                                setweight
-                            </span>
-
-                            <span>
-                                Relevance
-                            </span>
-
-                        </div>
-
-
-                        <a href="./v4/v4.html">
-
-                            Open V4
-
-                            <span>
-                                →
-                            </span>
-
-                        </a>
-
-                    </article>
-
-
-
-                    <!-- =================================================
-                         V5
-                         ================================================= -->
-
-                    <article
-                        class="version-card"
-                        data-version="v5"
-                    >
-
-                        <div class="version-top">
-
-                            <span class="version-number">
-                                V5
-                            </span>
-
-                            <span class="status">
                                 RESILIENCE
                             </span>
 
@@ -537,9 +472,9 @@
                         </div>
 
 
-                        <a href="./v5/v5.html">
+                        <a href="./v4/v4.html">
 
-                            Open V5
+                            Open V4
 
                             <span>
                                 →
@@ -552,18 +487,18 @@
 
 
                     <!-- =================================================
-                         V6
+                         V5
                          ================================================= -->
 
                     <article
                         class="version-card"
-                        data-version="v6"
+                        data-version="v5"
                     >
 
                         <div class="version-top">
 
                             <span class="version-number">
-                                V6
+                                V5
                             </span>
 
                             <span class="status">
@@ -602,9 +537,9 @@
                         </div>
 
 
-                        <a href="./v6/v6.html">
+                        <a href="./v5/v5.html">
 
-                            Open V6
+                            Open V5
 
                             <span>
                                 →
@@ -683,9 +618,8 @@ VERSION             APP TIME      POSTGRESQL      PLAN
 V1  ILIKE              -- ms          -- ms       Sequential Scan
 V2  Full-text           -- ms          -- ms       --
 V3  FTS + GIN           -- ms          -- ms       --
-V4  Weighted            -- ms          -- ms       --
-V5  Fuzzy               -- ms          -- ms       --
-V6  Cached              -- ms          -- ms       --</code></pre>
+V4  Fuzzy               -- ms          -- ms       --
+V5  Cached              -- ms          -- ms       --</code></pre>
 
                 </div>
 

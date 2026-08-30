@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="SearchLab V3 — PostgreSQL Full-Text Search with a persisted tsvector, trigger maintenance and GIN indexing."
+    >
+
+    <title>
+        SearchLab — V3 FTS + GIN
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./v3.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         BACKGROUND
+    ========================================================== -->
+
+    <div class="background-grid"></div>
+
+    <div class="background-glow glow-left"></div>
+
+    <div class="background-glow glow-right"></div>
+
+
+
+    <!-- =========================================================
+         APP
+    ========================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <header class="site-header">
+
+            <a
+                href="../index.html"
+                class="brand"
+            >
+
+                <div class="brand-mark">
+                    SL
+                </div>
+
+                <div class="brand-copy">
+
+                    <strong>
+                        SearchLab
+                    </strong>
+
+                    <span>
+                        PostgreSQL Search Engineering
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <div class="header-meta">
+
+                <span class="version-chip">
+                    V3
+                </span>
+
+                <span class="engine-chip">
+                    FTS + GIN
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <main>
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="hero">
+
+                <div class="hero-badge">
+
+                    <span></span>
+
+                    Indexed Full-Text Retrieval
+
+                </div>
+
+
+                <h1>
+
+                    Same search semantics.
+
+                    <span>
+                        Better retrieval architecture.
+                    </span>
+
+                </h1>
+
+
+                <p>
+                    V3 keeps the linguistic retrieval introduced in V2,
+                    but moves document-vector construction to the write
+                    path and adds a PostgreSQL GIN inverted index for
+                    candidate lookup.
+                </p>
+
+
+
+                <!-- =============================================
+                     SEARCH
+                ============================================== -->
+
+                <div class="search-panel">
+
+                    <form
+                        id="search-form"
+                        class="search-form"
+                    >
+
+                        <div class="search-input-wrapper">
+
+                            <span class="search-icon">
+                                ⌕
+                            </span>
+
+                            <input
+                                id="search-input"
+                                type="search"
+                                placeholder="gaming mechanical keyboard"
+                                autocomplete="off"
+                                required
+                            >
+
+                            <button
+                                id="clear-search-button"
+                                class="clear-button"
+                                type="button"
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            id="search-button"
+                            class="primary-button"
+                            type="submit"
+                        >
+
+                            Search
+
+                            <span>
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+                    <div class="search-examples">
+
+                        <span class="example-label">
+                            Try
+                        </span>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="gaming mechanical keyboard"
+                        >
+                            gaming mechanical keyboard
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query='"wireless keyboard"'
+                        >
+                            "wireless keyboard"
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="apple OR samsung"
+                        >
+                            apple OR samsung
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="gaming -wireless"
+                        >
+                            gaming -wireless
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EMPTY STATE
+            ================================================== -->
+
+            <section
+                id="initial-state"
+                class="initial-state"
+            >
+
+                <div class="initial-symbol">
+                    GIN
+                </div>
+
+                <h2>
+                    Indexed linguistic retrieval
+                </h2>
+
+                <p>
+                    Search to inspect whether PostgreSQL chooses the
+                    GIN index, how many rows are retrieved, and how
+                    V3 compares with V2.
+                </p>
+
+
+                <div class="concept-grid">
+
+                    <article>
+
+                        <span>
+                            01
+                        </span>
+
+                        <h3>
+                            Persisted vector
+                        </h3>
+
+                        <p>
+                            Product search vectors already exist before
+                            a search begins.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            02
+                        </span>
+
+                        <h3>
+                            Trigger maintenance
+                        </h3>
+
+                        <p>
+                            PostgreSQL rebuilds the vector when relevant
+                            product fields change.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            03
+                        </span>
+
+                        <h3>
+                            GIN retrieval
+                        </h3>
+
+                        <p>
+                            An inverted index helps PostgreSQL locate
+                            matching lexemes efficiently.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LOADING
+            ================================================== -->
+
+            <section
+                id="loading-state"
+                class="loading-state hidden"
+            >
+
+                <div class="spinner"></div>
+
+                <div>
+
+                    <strong>
+                        Running indexed full-text search
+                    </strong>
+
+                    <span>
+                        Querying PostgreSQL and inspecting the execution
+                        plan.
+                    </span>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ERROR
+            ================================================== -->
+
+            <section
+                id="error-state"
+                class="error-state hidden"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <h2>
+                        Search failed
+                    </h2>
+
+                    <p id="error-message">
+                        Something went wrong.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 OUTPUT
+            ================================================== -->
+
+            <div
+                id="search-output"
+                class="search-output hidden"
+            >
+
+
+                <!-- =============================================
+                     QUERY REPORT
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                QUERY
+                            </span>
+
+                            <h2>
+                                Search report
+                            </h2>
+
+                        </div>
+
+
+                        <div class="query-box">
+
+                            <span>
+                                Query
+                            </span>
+
+                            <strong id="report-query">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrics-grid">
+
+                        <article class="metric-card">
+
+                            <span>
+                                Results
+                            </span>
+
+                            <strong id="metric-result-count">
+                                —
+                            </strong>
+
+                            <small>
+                                matching products
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Application time
+                            </span>
+
+                            <strong id="metric-application-time">
+                                —
+                            </strong>
+
+                            <small>
+                                Python-observed duration
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                PostgreSQL execution
+                            </span>
+
+                            <strong id="metric-db-execution-time">
+                                —
+                            </strong>
+
+                            <small>
+                                server-side execution
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Peak Python memory
+                            </span>
+
+                            <strong id="metric-peak-memory">
+                                —
+                            </strong>
+
+                            <small>
+                                traced allocation
+                            </small>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     INDEX STATUS
+                ============================================== -->
+
+                <section class="section-card index-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                INDEX
+                            </span>
+
+                            <h2>
+                                GIN index status
+                            </h2>
+
+                            <p>
+                                An index existing does not guarantee the
+                                planner will use it.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="index-status-badge"
+                            class="index-status-badge"
+                        >
+                            Waiting for plan
+                        </span>
+
+                    </div>
+
+
+                    <div class="index-status-grid">
+
+                        <article class="index-card index-card-main">
+
+                            <span class="card-label">
+                                Index
+                            </span>
+
+                            <strong id="plan-index-name">
+                                idx_products_search_vector
+                            </strong>
+
+                            <p>
+                                GIN inverted index built over the
+                                persisted product search vector.
+                            </p>
+
+                        </article>
+
+
+                        <article class="index-card">
+
+                            <span class="card-label">
+                                Index used
+                            </span>
+
+                            <strong id="plan-index-used">
+                                —
+                            </strong>
+
+                            <p>
+                                Determined from the actual PostgreSQL
+                                execution plan.
+                            </p>
+
+                        </article>
+
+
+                        <article class="index-card">
+
+                            <span class="card-label">
+                                Scan strategy
+                            </span>
+
+                            <strong id="plan-scan-strategy">
+                                —
+                            </strong>
+
+                            <p>
+                                Bitmap, index-assisted or sequential
+                                retrieval.
+                            </p>
+
+                        </article>
+
+
+                        <article class="index-card">
+
+                            <span class="card-label">
+                                Candidate rows
+                            </span>
+
+                            <strong id="plan-actual-rows">
+                                —
+                            </strong>
+
+                            <p>
+                                Rows produced by the selected retrieval
+                                node.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     EXECUTION REPORT
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                POSTGRESQL
+                            </span>
+
+                            <h2>
+                                Execution report
+                            </h2>
+
+                            <p>
+                                Human-readable interpretation of
+                                <code>EXPLAIN ANALYZE</code>.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="plan-scan-badge"
+                            class="plan-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+                    <div class="execution-grid">
+
+
+                        <article class="execution-card operation-card">
+
+                            <div class="operation-heading">
+
+                                <div class="db-icon">
+                                    DB
+                                </div>
+
+                                <div>
+
+                                    <span class="card-label">
+                                        Primary retrieval operation
+                                    </span>
+
+                                    <h3 id="plan-primary-operation">
+                                        —
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+
+                            <p id="plan-primary-description">
+                                Run a search to inspect PostgreSQL's
+                                selected execution strategy.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Planning time
+                            </span>
+
+                            <strong id="plan-planning-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Time spent constructing the query plan.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Execution time
+                            </span>
+
+                            <strong id="plan-execution-time">
+                                —
+                            </strong>
+
+                            <p>
+                                PostgreSQL executor duration.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Rows removed
+                            </span>
+
+                            <strong id="plan-rows-removed">
+                                —
+                            </strong>
+
+                            <p>
+                                Rows rejected by filters after retrieval.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Shared hits
+                            </span>
+
+                            <strong id="plan-shared-hit">
+                                —
+                            </strong>
+
+                            <p>
+                                Pages found in PostgreSQL shared buffers.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Shared reads
+                            </span>
+
+                            <strong id="plan-shared-read">
+                                —
+                            </strong>
+
+                            <p>
+                                Pages read into shared buffers.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                First row
+                            </span>
+
+                            <strong id="plan-first-row-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Startup time for the selected node.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Node completion
+                            </span>
+
+                            <strong id="plan-last-row-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Total time spent inside the selected node.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         EXECUTION FLOW
+                    ========================================== -->
+
+                    <div class="pipeline-panel">
+
+                        <div class="subheading">
+
+                            <span class="eyebrow">
+                                EXECUTION FLOW
+                            </span>
+
+                            <h3>
+                                Expected V3 retrieval path
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            id="execution-pipeline"
+                            class="execution-pipeline"
+                        >
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    1
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Parse query
+                                    </strong>
+
+                                    <span>
+                                        websearch_to_tsquery()
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    2
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        GIN lookup
+                                    </strong>
+
+                                    <span>
+                                        Bitmap Index Scan
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    3
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Fetch rows
+                                    </strong>
+
+                                    <span>
+                                        Bitmap Heap Scan
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    4
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Rank
+                                    </strong>
+
+                                    <span>
+                                        ts_rank_cd()
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    5
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Sort
+                                    </strong>
+
+                                    <span>
+                                        relevance DESC
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         RAW OUTPUT
+                    ========================================== -->
+
+                    <div class="raw-grid">
+
+                        <details class="technical-panel">
+
+                            <summary>
+
+                                <span>
+                                    Raw SQL query
+                                </span>
+
+                                <span class="details-icon">
+                                    +
+                                </span>
+
+                            </summary>
+
+
+                            <div class="technical-content">
+
+                                <button
+                                    type="button"
+                                    class="copy-button"
+                                    data-copy-target="raw-sql"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-sql"></code></pre>
+
+                            </div>
+
+                        </details>
+
+
+                        <details class="technical-panel">
+
+                            <summary>
+
+                                <span>
+                                    Raw EXPLAIN response
+                                </span>
+
+                                <span class="details-icon">
+                                    +
+                                </span>
+
+                            </summary>
+
+
+                            <div class="technical-content">
+
+                                <button
+                                    type="button"
+                                    class="copy-button"
+                                    data-copy-target="raw-explain"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-explain"></code></pre>
+
+                            </div>
+
+                        </details>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     WRITE PATH
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                WRITE PATH
+                            </span>
+
+                            <h2>
+                                Trigger-maintained search vector
+                            </h2>
+
+                            <p>
+                                V3 moves vector construction out of
+                                search requests and into product writes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="write-path">
+
+                        <div class="write-node">
+
+                            <span>
+                                Product change
+                            </span>
+
+                            <strong>
+                                INSERT / UPDATE
+                            </strong>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="write-node">
+
+                            <span>
+                                PostgreSQL
+                            </span>
+
+                            <strong>
+                                BEFORE trigger
+                            </strong>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="write-node">
+
+                            <span>
+                                Function
+                            </span>
+
+                            <strong>
+                                update_product_search_vector()
+                            </strong>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="write-node">
+
+                            <span>
+                                Persisted
+                            </span>
+
+                            <strong>
+                                search_vector
+                            </strong>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="write-node">
+
+                            <span>
+                                Index
+                            </span>
+
+                            <strong>
+                                GIN maintained
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="trigger-grid">
+
+                        <article class="trigger-card">
+
+                            <span class="trigger-label">
+                                Trigger
+                            </span>
+
+                            <h3>
+                                BEFORE INSERT
+                            </h3>
+
+                            <p>
+                                New products receive a search vector
+                                before the row is stored.
+                            </p>
+
+                        </article>
+
+
+                        <article class="trigger-card">
+
+                            <span class="trigger-label">
+                                Trigger
+                            </span>
+
+                            <h3>
+                                BEFORE UPDATE
+                            </h3>
+
+                            <p>
+                                Search vectors are rebuilt when
+                                searchable product fields change.
+                            </p>
+
+                        </article>
+
+
+                        <article class="trigger-card">
+
+                            <span class="trigger-label">
+                                Scoped fields
+                            </span>
+
+                            <h3>
+                                UPDATE OF
+                            </h3>
+
+                            <p>
+                                Name, brand, category, tags and
+                                description trigger vector maintenance.
+                            </p>
+
+                        </article>
+
+
+                        <article class="trigger-card">
+
+                            <span class="trigger-label">
+                                Isolation
+                            </span>
+
+                            <h3>
+                                Search path
+                            </h3>
+
+                            <p>
+                                Triggers do not run during normal search
+                                requests.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     V2 VS V3
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                BENCHMARK
+                            </span>
+
+                            <h2>
+                                V2 vs V3
+                            </h2>
+
+                            <p>
+                                Same FTS semantics. Different retrieval
+                                architecture.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="comparison-table-wrapper">
+
+                        <table class="comparison-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Version
+                                    </th>
+
+                                    <th>
+                                        Strategy
+                                    </th>
+
+                                    <th>
+                                        Results
+                                    </th>
+
+                                    <th>
+                                        App time
+                                    </th>
+
+                                    <th>
+                                        DB execution
+                                    </th>
+
+                                    <th>
+                                        Peak memory
+                                    </th>
+
+                                    <th>
+                                        Primary scan
+                                    </th>
+
+                                    <th>
+                                        Index
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V2
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        Runtime FTS vector
+                                    </td>
+
+                                    <td id="comparison-v2-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-memory">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-scan">
+                                        Sequential Scan
+                                    </td>
+
+                                    <td>
+                                        None
+                                    </td>
+
+                                </tr>
+
+
+                                <tr class="active-comparison-row">
+
+                                    <td>
+
+                                        <span class="version-pill active">
+                                            V3
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        Persisted vector + GIN
+                                    </td>
+
+                                    <td id="comparison-v3-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-memory">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-scan">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-index">
+                                        —
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     RESULTS
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                RESULTS
+                            </span>
+
+                            <h2>
+                                Ranked products
+                            </h2>
+
+                            <p>
+                                Matching products remain ordered using
+                                <code>ts_rank_cd()</code>.
+                            </p>
+
+                        </div>
+
+
+                        <div class="visible-count">
+
+                            <strong id="results-visible-count">
+                                0
+                            </strong>
+
+                            <span>
+                                shown
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="results-container"
+                        class="results-list"
+                    >
+                    </div>
+
+
+                    <div class="see-more-wrapper">
+
+                        <button
+                            id="see-more-button"
+                            class="secondary-button hidden"
+                            type="button"
+                        >
+                            See more results
+
+                            <span>
+                                ↓
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     EXPLANATION
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                EXPLANATION
+                            </span>
+
+                            <h2>
+                                What changed in V3?
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="docs-grid">
+
+                        <article class="docs-card">
+
+                            <span>
+                                01
+                            </span>
+
+                            <h3>
+                                Persisted `tsvector`
+                            </h3>
+
+                            <p>
+                                V3 no longer rebuilds the complete
+                                product document vector during every
+                                search.
+                            </p>
+
+                            <code>
+                                products.search_vector
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                02
+                            </span>
+
+                            <h3>
+                                Trigger maintenance
+                            </h3>
+
+                            <p>
+                                PostgreSQL keeps the stored vector
+                                synchronized with searchable fields.
+                            </p>
+
+                            <code>
+                                BEFORE INSERT OR UPDATE
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                03
+                            </span>
+
+                            <h3>
+                                GIN inverted index
+                            </h3>
+
+                            <p>
+                                PostgreSQL can locate matching lexemes
+                                without beginning from every product row.
+                            </p>
+
+                            <code>
+                                USING GIN(search_vector)
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                04
+                            </span>
+
+                            <h3>
+                                Ranking remains separate
+                            </h3>
+
+                            <p>
+                                GIN finds candidates. PostgreSQL still
+                                calculates relevance and sorts matches.
+                            </p>
+
+                            <code>
+                                ts_rank_cd()
+                            </code>
+
+                        </article>
+
+                    </div>
+
+
+                    <details class="deep-dive">
+
+                        <summary>
+
+                            <span>
+                                Why PostgreSQL may still choose a
+                                Sequential Scan
+                            </span>
+
+                            <span class="details-icon">
+                                +
+                            </span>
+
+                        </summary>
+
+
+                        <div class="deep-dive-content">
+
+                            <p>
+                                An index does not force a particular
+                                execution plan. PostgreSQL estimates the
+                                cost of available strategies and may
+                                prefer a sequential scan when a query
+                                matches a very large percentage of the
+                                table.
+                            </p>
+
+
+                            <div class="selectivity-grid">
+
+                                <div>
+
+                                    <span>
+                                        Highly selective
+                                    </span>
+
+                                    <strong>
+                                        120 / 100,000
+                                    </strong>
+
+                                    <p>
+                                        GIN is likely valuable.
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Medium selectivity
+                                    </span>
+
+                                    <strong>
+                                        8,000 / 100,000
+                                    </strong>
+
+                                    <p>
+                                        Planner evaluates tradeoffs.
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Very broad
+                                    </span>
+
+                                    <strong>
+                                        80,000 / 100,000
+                                    </strong>
+
+                                    <p>
+                                        Sequential Scan may be cheaper.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </details>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="site-footer">
+
+            <span>
+                SearchLab
+            </span>
+
+            <span>
+                V3 · Persisted tsvector · Trigger · GIN
+            </span>
+
+        </footer>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SCRIPTS
+    ========================================================== -->
+
+    <script
+        type="module"
+        src="./v3.js"
+    ></script>
+
+</body>
+
+</html>
