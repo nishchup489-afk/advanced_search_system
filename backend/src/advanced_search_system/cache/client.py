@@ -1,11 +1,9 @@
 import redis 
-import os 
-from dotenv import load_dotenv 
+
+from advanced_search_system.config import settings
 
 
-load_dotenv() 
-
-REDIS_URL = os.getenv("REDIS_URL")
+REDIS_URL = settings.redis_url
 
 
 redis_client = redis.from_url(

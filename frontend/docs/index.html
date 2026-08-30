@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SearchLab documentation for PostgreSQL search versions V1 through V5.">
+    <title>SearchLab Documentation</title>
+    <link rel="stylesheet" href="../styles/navigation.css">
+    <link rel="stylesheet" href="./docs.css">
+</head>
+<body>
+    <header class="docs-hero">
+        <div>
+            <span class="docs-eyebrow">SEARCH ENGINEERING HANDBOOK</span>
+            <h1>SearchLab documentation</h1>
+            <p>
+                Follow the architecture from substring matching to indexed full-text search,
+                typo recovery, and Redis caching.
+            </p>
+        </div>
+        <label class="docs-search">
+            <span>Search this guide</span>
+            <input id="docs-search" type="search" placeholder="Try: GIN, tsquery, cache key" autocomplete="off">
+        </label>
+    </header>
+
+    <main class="docs-layout">
+        <aside class="docs-sidebar" aria-label="Documentation versions">
+            <div class="docs-sidebar__sticky">
+                <span class="docs-sidebar__label">Versions</span>
+                <nav id="docs-version-navigation" class="docs-version-navigation"></nav>
+                <div class="docs-toc-wrap">
+                    <span class="docs-sidebar__label">On this page</span>
+                    <nav id="docs-toc" class="docs-toc"></nav>
+                </div>
+            </div>
+        </aside>
+
+        <section class="docs-content">
+            <div id="docs-status" class="docs-status" role="status">Loading documentation…</div>
+            <div id="docs-search-results" class="docs-search-results" hidden></div>
+            <article id="docs-article" class="markdown-body" hidden></article>
+            <nav class="docs-pagination" aria-label="Adjacent documentation">
+                <a id="docs-previous" href="#"></a>
+                <a id="docs-next" href="#"></a>
+            </nav>
+        </section>
+    </main>
+
+    <script src="../scripts/navigation.js" data-root=".." data-current="docs" defer></script>
+    <script src="./docs.js" defer></script>
+</body>
+</html>

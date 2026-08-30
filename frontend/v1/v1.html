@@ -22,6 +22,11 @@
         rel="stylesheet"
         href="./v1.css"
     >
+
+    <link
+        rel="stylesheet"
+        href="../styles/navigation.css"
+    >
 </head>
 
 
@@ -1109,11 +1114,11 @@ LIMIT 10;</code></pre>
                                 <div>
 
                                     <strong>
-                                        Weighted ranking
+                                        Fuzzy fallback
                                     </strong>
 
                                     <small>
-                                        Relevance-aware ordering
+                                        Typo-tolerant retrieval
                                     </small>
 
                                 </div>
@@ -1155,57 +1160,6 @@ LIMIT 10;</code></pre>
 
                                 <span class="benchmark-version">
                                     V5
-                                </span>
-
-                                <div>
-
-                                    <strong>
-                                        Fuzzy fallback
-                                    </strong>
-
-                                    <small>
-                                        Typo-tolerant retrieval
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="benchmark-measurements">
-
-                                <div>
-                                    <span>App</span>
-                                    <strong>-- ms</strong>
-                                </div>
-
-                                <div>
-                                    <span>PostgreSQL</span>
-                                    <strong>-- ms</strong>
-                                </div>
-
-                                <div>
-                                    <span>Plan</span>
-                                    <strong>--</strong>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <!-- V6 -->
-
-                        <div
-                            class="benchmark-row"
-                            data-version="6"
-                        >
-
-                            <div class="benchmark-identity">
-
-                                <span class="benchmark-version">
-                                    V6
                                 </span>
 
                                 <div>
@@ -2275,6 +2229,13 @@ case for keyboard...</code></pre>
     <script
         type="module"
         src="./v1.js"
+    ></script>
+
+    <script
+        src="../scripts/navigation.js"
+        data-root=".."
+        data-current="v1"
+        defer
     ></script>
 
 </body>

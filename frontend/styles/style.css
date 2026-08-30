@@ -933,6 +933,69 @@ code {
     gap: 80px;
 }
 
+.benchmark-controls {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.benchmark-controls > label {
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.benchmark-controls > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
+.benchmark-controls input,
+.benchmark-controls button {
+    min-height: 46px;
+    border-radius: 10px;
+}
+
+.benchmark-controls input {
+    min-width: 0;
+    padding: 0 13px;
+    border: 1px solid var(--border);
+    outline: none;
+    background: var(--bg-card);
+    color: var(--text);
+}
+
+.benchmark-controls input:focus {
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.benchmark-controls button {
+    padding: 0 16px;
+    border: 1px solid var(--accent-border);
+    background: var(--accent-soft);
+    color: #c8f3d7;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.benchmark-controls button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.benchmark-status {
+    min-height: 1.4em;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.benchmark-status[data-state="error"] {
+    color: #ff9eaa;
+}
+
 
 /* =========================================================
    TERMINAL
@@ -1028,6 +1091,78 @@ code {
 
 .terminal pre code {
     color: inherit;
+}
+
+.benchmark-output {
+    padding: 22px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+}
+
+.benchmark-output__meta {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.benchmark-output__meta span,
+.benchmark-output__head {
+    color: var(--text-muted);
+}
+
+.benchmark-output__meta strong {
+    overflow: hidden;
+    color: var(--text-soft);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.benchmark-output__head,
+.benchmark-output__row {
+    display: grid;
+    grid-template-columns: minmax(115px, 1.15fr) 0.65fr 0.8fr 0.85fr minmax(105px, 1fr);
+    align-items: center;
+    gap: 10px;
+}
+
+.benchmark-output__head {
+    padding: 18px 10px 9px;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.benchmark-output__row {
+    min-height: 48px;
+    padding: 8px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-soft);
+}
+
+.benchmark-output__row strong {
+    color: var(--text);
+}
+
+.benchmark-output__row small {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 500;
+}
+
+.benchmark-output__row[data-state="running"] {
+    background: rgba(106, 169, 255, 0.06);
+}
+
+.benchmark-output__row[data-state="complete"] [data-field="plan"] {
+    color: var(--accent);
+}
+
+.benchmark-output__row[data-state="error"] {
+    color: #ff9eaa;
 }
 
 
@@ -1293,6 +1428,21 @@ button:focus-visible {
     .benchmark {
         gap:
             38px;
+    }
+
+    .benchmark-controls > div {
+        grid-template-columns: 1fr;
+    }
+
+    .benchmark-output {
+        padding: 14px;
+        overflow-x: auto;
+    }
+
+    .benchmark-output__meta,
+    .benchmark-output__head,
+    .benchmark-output__row {
+        min-width: 650px;
     }
 
     .terminal pre {

@@ -22,6 +22,11 @@
         rel="stylesheet"
         href="./styles/style.css"
     >
+
+    <link
+        rel="stylesheet"
+        href="./styles/navigation.css"
+    >
 </head>
 
 
@@ -589,6 +594,17 @@
                         changed underneath.
                     </p>
 
+                    <form id="benchmark-form" class="benchmark-controls">
+                        <label for="benchmark-query">Benchmark query</label>
+                        <div>
+                            <input id="benchmark-query" name="q" type="search" value="wireless keyboard" minlength="1" maxlength="200" autocomplete="off" required>
+                            <button id="benchmark-run" type="submit">Run V1–V5</button>
+                        </div>
+                        <p id="benchmark-status" class="benchmark-status" role="status">
+                            Ready. Versions run sequentially against the same query.
+                        </p>
+                    </form>
+
                 </div>
 
 
@@ -608,18 +624,22 @@
                     </div>
 
 
-                    <pre><code>dataset             100,000 products
-
-query               "wireless keyboard"
-
-
-VERSION             APP TIME      POSTGRESQL      PLAN
-
-V1  ILIKE              -- ms          -- ms       Sequential Scan
-V2  Full-text           -- ms          -- ms       --
-V3  FTS + GIN           -- ms          -- ms       --
-V4  Fuzzy               -- ms          -- ms       --
-V5  Cached              -- ms          -- ms       --</code></pre>
+                    <div class="benchmark-output" aria-live="polite">
+                        <div class="benchmark-output__meta">
+                            <span>query</span>
+                            <strong id="benchmark-active-query">—</strong>
+                        </div>
+                        <div class="benchmark-output__head" aria-hidden="true">
+                            <span>Version</span><span>Results</span><span>App time</span><span>PostgreSQL</span><span>Plan</span>
+                        </div>
+                        <div id="benchmark-rows" class="benchmark-output__rows">
+                            <div class="benchmark-output__row" data-benchmark-version="v1"><strong>V1 <small>ILIKE</small></strong><span data-field="results">—</span><span data-field="app">—</span><span data-field="db">—</span><span data-field="plan">Waiting</span></div>
+                            <div class="benchmark-output__row" data-benchmark-version="v2"><strong>V2 <small>Full-text</small></strong><span data-field="results">—</span><span data-field="app">—</span><span data-field="db">—</span><span data-field="plan">Waiting</span></div>
+                            <div class="benchmark-output__row" data-benchmark-version="v3"><strong>V3 <small>FTS + GIN</small></strong><span data-field="results">—</span><span data-field="app">—</span><span data-field="db">—</span><span data-field="plan">Waiting</span></div>
+                            <div class="benchmark-output__row" data-benchmark-version="v4"><strong>V4 <small>Fuzzy</small></strong><span data-field="results">—</span><span data-field="app">—</span><span data-field="db">—</span><span data-field="plan">Waiting</span></div>
+                            <div class="benchmark-output__row" data-benchmark-version="v5"><strong>V5 <small>Cached</small></strong><span data-field="results">—</span><span data-field="app">—</span><span data-field="db">—</span><span data-field="plan">Waiting</span></div>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -820,6 +840,13 @@ V5  Cached              -- ms          -- ms       --</code></pre>
     <script
         type="module"
         src="./scripts/script.js"
+    ></script>
+
+    <script
+        src="./scripts/navigation.js"
+        data-root="."
+        data-current="home"
+        defer
     ></script>
 
 </body>
