@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="SearchLab V4 — PostgreSQL Full-Text Search with pg_trgm fuzzy fallback."
+    >
+
+    <title>
+        SearchLab — V4 Fuzzy Fallback
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./v4.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         BACKGROUND
+    ========================================================== -->
+
+    <div class="background-grid"></div>
+
+    <div class="background-glow glow-left"></div>
+
+    <div class="background-glow glow-right"></div>
+
+
+
+    <!-- =========================================================
+         APP
+    ========================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <header class="site-header">
+
+            <a
+                href="../index.html"
+                class="brand"
+            >
+
+                <div class="brand-mark">
+                    SL
+                </div>
+
+                <div class="brand-copy">
+
+                    <strong>
+                        SearchLab
+                    </strong>
+
+                    <span>
+                        PostgreSQL Search Engineering
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <div class="header-meta">
+
+                <span class="version-chip">
+                    V4
+                </span>
+
+                <span class="engine-chip">
+                    FTS + pg_trgm
+                </span>
+
+            </div>
+
+        </header>
+
+
+
+        <main>
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="hero">
+
+                <div class="hero-badge">
+
+                    <span></span>
+
+                    Typo-Tolerant Retrieval
+
+                </div>
+
+
+                <h1>
+
+                    Search normally.
+
+                    <span>
+                        Recover intelligently.
+                    </span>
+
+                </h1>
+
+
+                <p>
+                    V4 keeps V3 indexed full-text search as the primary
+                    retrieval path, then activates PostgreSQL trigram
+                    similarity when linguistic search cannot recover
+                    useful results.
+                </p>
+
+
+
+                <!-- =============================================
+                     SEARCH FORM
+                ============================================== -->
+
+                <div class="search-panel">
+
+                    <form
+                        id="search-form"
+                        class="search-form"
+                    >
+
+                        <div class="search-input-wrapper">
+
+                            <span class="search-icon">
+                                ⌕
+                            </span>
+
+                            <input
+                                id="search-input"
+                                type="search"
+                                placeholder="Try: logtech keybord"
+                                autocomplete="off"
+                                required
+                            >
+
+                            <button
+                                id="clear-search-button"
+                                class="clear-button"
+                                type="button"
+                                aria-label="Clear search"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            id="search-button"
+                            class="primary-button"
+                            type="submit"
+                        >
+
+                            Search
+
+                            <span>
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+                    <div class="search-examples">
+
+                        <span class="example-label">
+                            Try
+                        </span>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="logtech keyboard"
+                        >
+                            logtech keyboard
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="keybord"
+                        >
+                            keybord
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="samsng"
+                        >
+                            samsng
+                        </button>
+
+                        <button
+                            type="button"
+                            class="query-example"
+                            data-query="wireles mouse"
+                        >
+                            wireles mouse
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 INITIAL STATE
+            ================================================== -->
+
+            <section
+                id="initial-state"
+                class="initial-state"
+            >
+
+                <div class="initial-symbol">
+                    ≈
+                </div>
+
+
+                <h2>
+                    Fuzzy fallback
+                </h2>
+
+
+                <p>
+                    V4 introduces typo tolerance without replacing
+                    full-text search. PostgreSQL first attempts the
+                    normal FTS path, then falls back to trigram
+                    similarity when needed.
+                </p>
+
+
+                <div class="concept-grid">
+
+                    <article>
+
+                        <span>
+                            01
+                        </span>
+
+                        <h3>
+                            Primary search
+                        </h3>
+
+                        <p>
+                            V3 full-text search remains the preferred
+                            retrieval strategy.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            02
+                        </span>
+
+                        <h3>
+                            Detect failure
+                        </h3>
+
+                        <p>
+                            Fuzzy retrieval activates only when the
+                            normal search path cannot satisfy the query.
+                        </p>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>
+                            03
+                        </span>
+
+                        <h3>
+                            Trigram recovery
+                        </h3>
+
+                        <p>
+                            Similar character sequences help recover
+                            misspelled brands, categories and names.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LOADING
+            ================================================== -->
+
+            <section
+                id="loading-state"
+                class="loading-state hidden"
+            >
+
+                <div class="spinner"></div>
+
+                <div>
+
+                    <strong>
+                        Running search pipeline
+                    </strong>
+
+                    <span>
+                        Testing FTS and inspecting fuzzy fallback.
+                    </span>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ERROR
+            ================================================== -->
+
+            <section
+                id="error-state"
+                class="error-state hidden"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <h2>
+                        Search failed
+                    </h2>
+
+                    <p id="error-message">
+                        Something went wrong.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SEARCH OUTPUT
+            ================================================== -->
+
+            <div
+                id="search-output"
+                class="search-output hidden"
+            >
+
+
+                <!-- =============================================
+                     SEARCH REPORT
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                QUERY
+                            </span>
+
+                            <h2>
+                                Search report
+                            </h2>
+
+                        </div>
+
+
+                        <div class="query-box">
+
+                            <span>
+                                Query
+                            </span>
+
+                            <strong id="report-query">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metrics-grid">
+
+                        <article class="metric-card">
+
+                            <span>
+                                Results
+                            </span>
+
+                            <strong id="metric-result-count">
+                                —
+                            </strong>
+
+                            <small>
+                                matching products
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Application time
+                            </span>
+
+                            <strong id="metric-application-time">
+                                —
+                            </strong>
+
+                            <small>
+                                Python-observed duration
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                PostgreSQL execution
+                            </span>
+
+                            <strong id="metric-db-execution-time">
+                                —
+                            </strong>
+
+                            <small>
+                                EXPLAIN execution time
+                            </small>
+
+                        </article>
+
+
+                        <article class="metric-card">
+
+                            <span>
+                                Peak Python memory
+                            </span>
+
+                            <strong id="metric-peak-memory">
+                                —
+                            </strong>
+
+                            <small>
+                                tracemalloc peak
+                            </small>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     STRATEGY
+                ============================================== -->
+
+                <section class="section-card strategy-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                RETRIEVAL STRATEGY
+                            </span>
+
+                            <h2>
+                                Search path
+                            </h2>
+
+                            <p>
+                                V4 exposes whether PostgreSQL returned
+                                normal full-text results or activated
+                                fuzzy recovery.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="strategy-badge"
+                            class="strategy-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="strategy-grid">
+
+                        <article class="strategy-card">
+
+                            <span class="card-label">
+                                Strategy
+                            </span>
+
+                            <strong id="strategy-name">
+                                —
+                            </strong>
+
+                            <p>
+                                The retrieval mode used for this request.
+                            </p>
+
+                        </article>
+
+
+                        <article class="strategy-card">
+
+                            <span class="card-label">
+                                Fallback used
+                            </span>
+
+                            <strong id="fallback-used">
+                                —
+                            </strong>
+
+                            <p>
+                                Whether trigram similarity was required.
+                            </p>
+
+                        </article>
+
+
+                        <article class="strategy-card">
+
+                            <span class="card-label">
+                                Search engine
+                            </span>
+
+                            <strong id="strategy-engine">
+                                —
+                            </strong>
+
+                            <p>
+                                PostgreSQL FTS or PostgreSQL pg_trgm.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+
+                    <div class="fallback-flow">
+
+                        <div class="fallback-step">
+
+                            <span class="step-number">
+                                1
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Full-Text Search
+                                </strong>
+
+                                <span>
+                                    V3 persisted tsvector + GIN
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="flow-arrow">
+                            →
+                        </span>
+
+
+                        <div class="fallback-condition">
+
+                            <span>
+                                results?
+                            </span>
+
+                        </div>
+
+
+                        <div class="branch-wrapper">
+
+                            <div class="branch">
+
+                                <span class="branch-label success">
+                                    YES
+                                </span>
+
+                                <div class="branch-line"></div>
+
+                                <strong>
+                                    Return FTS results
+                                </strong>
+
+                            </div>
+
+
+                            <div class="branch">
+
+                                <span class="branch-label fallback">
+                                    NO
+                                </span>
+
+                                <div class="branch-line"></div>
+
+                                <strong>
+                                    Activate pg_trgm
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     FUZZY ANALYSIS
+                ============================================== -->
+
+                <section class="section-card fuzzy-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                FUZZY ANALYSIS
+                            </span>
+
+                            <h2>
+                                Trigram similarity
+                            </h2>
+
+                            <p>
+                                Trigram matching compares overlapping
+                                three-character sequences rather than
+                                linguistic lexemes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="trigram-demo">
+
+                        <div class="trigram-word">
+
+                            <span>
+                                Input
+                            </span>
+
+                            <strong>
+                                keybord
+                            </strong>
+
+                            <div class="trigram-list">
+
+                                <code>key</code>
+                                <code>eyb</code>
+                                <code>ybo</code>
+                                <code>bor</code>
+                                <code>ord</code>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="similarity-symbol">
+                            ≈
+                        </div>
+
+
+                        <div class="trigram-word">
+
+                            <span>
+                                Stored value
+                            </span>
+
+                            <strong>
+                                keyboard
+                            </strong>
+
+                            <div class="trigram-list">
+
+                                <code>key</code>
+                                <code>eyb</code>
+                                <code>ybo</code>
+                                <code>boa</code>
+                                <code>oar</code>
+                                <code>ard</code>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="fuzzy-fields-grid">
+
+                        <article>
+
+                            <span class="field-weight">
+                                FIELD
+                            </span>
+
+                            <h3>
+                                Product name
+                            </h3>
+
+                            <code>
+                                similarity(name, query)
+                            </code>
+
+                            <p>
+                                Strong fuzzy signal for product-name
+                                misspellings.
+                            </p>
+
+                        </article>
+
+
+                        <article>
+
+                            <span class="field-weight">
+                                FIELD
+                            </span>
+
+                            <h3>
+                                Brand
+                            </h3>
+
+                            <code>
+                                similarity(brand, query)
+                            </code>
+
+                            <p>
+                                Useful for inputs such as
+                                <strong>logtech</strong>.
+                            </p>
+
+                        </article>
+
+
+                        <article>
+
+                            <span class="field-weight">
+                                FIELD
+                            </span>
+
+                            <h3>
+                                Category
+                            </h3>
+
+                            <code>
+                                similarity(category, query)
+                            </code>
+
+                            <p>
+                                Provides another recovery signal for
+                                categorical search terms.
+                            </p>
+
+                        </article>
+
+
+                        <article>
+
+                            <span class="field-weight">
+                                SCORE
+                            </span>
+
+                            <h3>
+                                GREATEST()
+                            </h3>
+
+                            <code>
+                                MAX field similarity
+                            </code>
+
+                            <p>
+                                The strongest fuzzy field becomes the
+                                product's current fuzzy score.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     EXECUTION REPORT
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                POSTGRESQL
+                            </span>
+
+                            <h2>
+                                Execution report
+                            </h2>
+
+                            <p>
+                                Human-readable interpretation of
+                                <code>EXPLAIN ANALYZE</code> and
+                                <code>BUFFERS</code>.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            id="plan-scan-badge"
+                            class="plan-badge"
+                        >
+                            Waiting
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="execution-grid">
+
+                        <article class="execution-card operation-card">
+
+                            <div class="operation-heading">
+
+                                <div class="db-icon">
+                                    DB
+                                </div>
+
+                                <div>
+
+                                    <span class="card-label">
+                                        Primary operation
+                                    </span>
+
+                                    <h3 id="plan-primary-operation">
+                                        —
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+
+                            <p id="plan-primary-description">
+                                Run a search to inspect PostgreSQL's
+                                selected execution strategy.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Planning time
+                            </span>
+
+                            <strong id="plan-planning-time">
+                                —
+                            </strong>
+
+                            <p>
+                                PostgreSQL query planning duration.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Execution time
+                            </span>
+
+                            <strong id="plan-execution-time">
+                                —
+                            </strong>
+
+                            <p>
+                                PostgreSQL server-side execution.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Rows removed
+                            </span>
+
+                            <strong id="plan-rows-removed">
+                                —
+                            </strong>
+
+                            <p>
+                                Rows discarded by filtering conditions.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Shared hits
+                            </span>
+
+                            <strong id="plan-shared-hit">
+                                —
+                            </strong>
+
+                            <p>
+                                Blocks already present in shared buffers.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Shared reads
+                            </span>
+
+                            <strong id="plan-shared-read">
+                                —
+                            </strong>
+
+                            <p>
+                                Blocks read into PostgreSQL buffers.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                First row
+                            </span>
+
+                            <strong id="plan-first-row-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Startup timing for the selected node.
+                            </p>
+
+                        </article>
+
+
+                        <article class="execution-card">
+
+                            <span class="card-label">
+                                Node completion
+                            </span>
+
+                            <strong id="plan-last-row-time">
+                                —
+                            </strong>
+
+                            <p>
+                                Total execution time for that node.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         FUZZY EXECUTION PIPELINE
+                    ========================================== -->
+
+                    <div class="pipeline-panel">
+
+                        <div class="subheading">
+
+                            <span class="eyebrow">
+                                FUZZY PIPELINE
+                            </span>
+
+                            <h3>
+                                pg_trgm fallback execution
+                            </h3>
+
+                        </div>
+
+
+                        <div class="execution-pipeline">
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    1
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Input
+                                    </strong>
+
+                                    <span>
+                                        raw query text
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    2
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        % operator
+                                    </strong>
+
+                                    <span>
+                                        similarity threshold
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    3
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        similarity()
+                                    </strong>
+
+                                    <span>
+                                        field scores
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    4
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        GREATEST()
+                                    </strong>
+
+                                    <span>
+                                        fuzzy_score
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <span class="pipeline-arrow">
+                                →
+                            </span>
+
+
+                            <div class="pipeline-step">
+
+                                <span class="pipeline-number">
+                                    5
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Sort
+                                    </strong>
+
+                                    <span>
+                                        fuzzy_score DESC
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         RAW SQL + RAW EXPLAIN
+                    ========================================== -->
+
+                    <div class="raw-grid">
+
+                        <details class="technical-panel">
+
+                            <summary>
+
+                                <span>
+                                    Raw SQL query
+                                </span>
+
+                                <span class="details-icon">
+                                    +
+                                </span>
+
+                            </summary>
+
+
+                            <div class="technical-content">
+
+                                <button
+                                    type="button"
+                                    class="copy-button"
+                                    data-copy-target="raw-sql"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-sql"></code></pre>
+
+                            </div>
+
+                        </details>
+
+
+                        <details class="technical-panel">
+
+                            <summary>
+
+                                <span>
+                                    Raw EXPLAIN response
+                                </span>
+
+                                <span class="details-icon">
+                                    +
+                                </span>
+
+                            </summary>
+
+
+                            <div class="technical-content">
+
+                                <button
+                                    type="button"
+                                    class="copy-button"
+                                    data-copy-target="raw-explain"
+                                >
+                                    Copy
+                                </button>
+
+                                <pre><code id="raw-explain"></code></pre>
+
+                            </div>
+
+                        </details>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     V1 → V4 COMPARISON
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                BENCHMARK
+                            </span>
+
+                            <h2>
+                                Version comparison
+                            </h2>
+
+                            <p>
+                                Search architecture evolution from
+                                substring matching to fuzzy recovery.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="comparison-table-wrapper">
+
+                        <table class="comparison-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Version
+                                    </th>
+
+                                    <th>
+                                        Architecture
+                                    </th>
+
+                                    <th>
+                                        Results
+                                    </th>
+
+                                    <th>
+                                        App time
+                                    </th>
+
+                                    <th>
+                                        DB time
+                                    </th>
+
+                                    <th>
+                                        Peak memory
+                                    </th>
+
+                                    <th>
+                                        Retrieval
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V1
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        ILIKE substring
+                                    </td>
+
+                                    <td id="comparison-v1-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v1-memory">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Sequential scan
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V2
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        Runtime FTS
+                                    </td>
+
+                                    <td id="comparison-v2-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v2-memory">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Linguistic scan
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td>
+                                        <span class="version-pill">
+                                            V3
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        Persisted FTS + GIN
+                                    </td>
+
+                                    <td id="comparison-v3-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v3-memory">
+                                        —
+                                    </td>
+
+                                    <td>
+                                        Indexed FTS
+                                    </td>
+
+                                </tr>
+
+
+                                <tr class="active-comparison-row">
+
+                                    <td>
+
+                                        <span class="version-pill active">
+                                            V4
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        FTS + fuzzy fallback
+                                    </td>
+
+                                    <td id="comparison-v4-results">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v4-app-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v4-db-time">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v4-memory">
+                                        —
+                                    </td>
+
+                                    <td id="comparison-v4-retrieval">
+                                        —
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     RESULTS
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                RESULTS
+                            </span>
+
+                            <h2>
+                                Search results
+                            </h2>
+
+                            <p id="results-description">
+                                Results ranked by the active retrieval
+                                strategy.
+                            </p>
+
+                        </div>
+
+
+                        <div class="visible-count">
+
+                            <strong id="results-visible-count">
+                                0
+                            </strong>
+
+                            <span>
+                                shown
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="results-container"
+                        class="results-list"
+                    >
+                    </div>
+
+
+                    <div class="see-more-wrapper">
+
+                        <button
+                            id="see-more-button"
+                            class="secondary-button hidden"
+                            type="button"
+                        >
+                            See more results
+
+                            <span>
+                                ↓
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =============================================
+                     DOCS / EXPLANATION
+                ============================================== -->
+
+                <section class="section-card">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                EXPLANATION
+                            </span>
+
+                            <h2>
+                                What changed in V4?
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="docs-grid">
+
+                        <article class="docs-card">
+
+                            <span>
+                                01
+                            </span>
+
+                            <h3>
+                                FTS remains primary
+                            </h3>
+
+                            <p>
+                                Good queries should still use V3's
+                                linguistic retrieval and GIN-backed
+                                search path.
+                            </p>
+
+                            <code>
+                                search_vector @@ tsquery
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                02
+                            </span>
+
+                            <h3>
+                                Fallback activation
+                            </h3>
+
+                            <p>
+                                Fuzzy matching is an alternate recovery
+                                path rather than the default search
+                                engine.
+                            </p>
+
+                            <code>
+                                fallback_used = true
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                03
+                            </span>
+
+                            <h3>
+                                Trigram matching
+                            </h3>
+
+                            <p>
+                                pg_trgm compares overlapping character
+                                sequences and can recover many spelling
+                                mistakes.
+                            </p>
+
+                            <code>
+                                similarity()
+                            </code>
+
+                        </article>
+
+
+                        <article class="docs-card">
+
+                            <span>
+                                04
+                            </span>
+
+                            <h3>
+                                Similarity threshold
+                            </h3>
+
+                            <p>
+                                PostgreSQL's percent operator filters
+                                candidates based on the configured
+                                trigram similarity threshold.
+                            </p>
+
+                            <code>
+                                field % query
+                            </code>
+
+                        </article>
+
+                    </div>
+
+
+
+                    <details class="deep-dive">
+
+                        <summary>
+
+                            <span>
+                                Why not replace FTS with fuzzy search?
+                            </span>
+
+                            <span class="details-icon">
+                                +
+                            </span>
+
+                        </summary>
+
+
+                        <div class="deep-dive-content">
+
+                            <div class="architecture-comparison">
+
+                                <article>
+
+                                    <span>
+                                        FTS
+                                    </span>
+
+                                    <h3>
+                                        Linguistic retrieval
+                                    </h3>
+
+                                    <p>
+                                        Understands lexemes, stemming,
+                                        stop words, Boolean query
+                                        structure and field weighting.
+                                    </p>
+
+                                </article>
+
+
+                                <article>
+
+                                    <span>
+                                        pg_trgm
+                                    </span>
+
+                                    <h3>
+                                        Character similarity
+                                    </h3>
+
+                                    <p>
+                                        Understands that two strings
+                                        share many character sequences,
+                                        making it useful for spelling
+                                        recovery.
+                                    </p>
+
+                                </article>
+
+                            </div>
+
+
+                            <div class="architecture-message">
+
+                                <strong>
+                                    Different problems require different
+                                    retrieval strategies.
+                                </strong>
+
+                                <p>
+                                    V4 combines them instead of forcing
+                                    one algorithm to solve both
+                                    linguistic relevance and typo
+                                    tolerance.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </details>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="site-footer">
+
+            <span>
+                SearchLab
+            </span>
+
+            <span>
+                V4 · FTS · GIN · pg_trgm · Fuzzy Fallback
+            </span>
+
+        </footer>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         SCRIPTS
+    ========================================================== -->
+
+    <script
+        type="module"
+        src="./v4.js"
+    ></script>
+
+</body>
+
+</html>
