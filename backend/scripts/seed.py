@@ -6,7 +6,7 @@ from decimal import Decimal
 import psycopg
 from faker import Faker
 
-from backend.src.advanced_search_system.config import settings
+from advanced_search_system.config import settings
 
 fake = Faker()
 Faker.seed(42)
