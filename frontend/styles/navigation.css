@@ -165,3 +165,61 @@ body.has-global-navigation > .navbar {
         transition: none !important;
     }
 }
+
+/* Hosted demo cold-start notice (shared across all search pages). */
+.hosting-notice {
+    border-bottom: 1px solid rgba(245, 207, 99, 0.16);
+    background: rgba(245, 207, 99, 0.055);
+    color: #cbd2db;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.hosting-notice__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    width: min(calc(100% - 40px), 1380px);
+    margin-inline: auto;
+    padding: 10px 0;
+    font-size: 0.79rem;
+    line-height: 1.55;
+}
+
+.hosting-notice__inner p {
+    margin: 0;
+}
+
+.hosting-notice__inner strong {
+    color: #f5cf63;
+}
+
+.hosting-notice__indicator {
+    flex: 0 0 7px;
+    height: 7px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: #f5cf63;
+}
+
+.hosting-notice__inner a {
+    color: #e5edfa;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.hosting-notice__inner a:hover {
+    color: #ffffff;
+}
+
+.hosting-notice__inner a:focus-visible {
+    outline: 2px solid #64d18b;
+    outline-offset: 3px;
+}
+
+@media (max-width: 780px) {
+    .hosting-notice__inner {
+        width: min(calc(100% - 28px), 1380px);
+        font-size: 0.75rem;
+    }
+}

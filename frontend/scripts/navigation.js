@@ -51,6 +51,27 @@
     document.body.prepend(nav);
     document.body.classList.add("has-global-navigation");
 
+    // Explain remote free-tier cold starts without cluttering local development.
+    const isLocal = ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
+    if (!isLocal && current !== "docs") {
+        const notice = document.createElement("aside");
+        notice.className = "hosting-notice";
+        notice.setAttribute("aria-label", "Live demo hosting information");
+        notice.innerHTML = `
+            <div class="hosting-notice__inner">
+                <span class="hosting-notice__indicator" aria-hidden="true"></span>
+                <p>
+                    <strong>Live demo:</strong> The Render API may sleep when idle, so the first
+                    search can take around 50 seconds to start.
+                    For faster, consistent testing,
+                    <a href="https://github.com/nishchup489-afk/advanced_search_system#run-locally"
+                       target="_blank" rel="noopener noreferrer">run locally</a>.
+                </p>
+            </div>
+        `;
+        nav.after(notice);
+    }
+
     const toggle = nav.querySelector(".global-navigation__toggle");
     const closeMenu = () => {
         nav.dataset.open = "false";
